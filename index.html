@@ -760,7 +760,7 @@ function scrollToSec(id){
 })();
 
 // Customer Context AI Modal
-const GROQ_KEY=atob('Z3NrX2NtcGdHZWYxMmtMbW55UE8xZVhMV0dkeWIzRllYN3YwRXc0TE1sVGFOQnc0Y1FubWJpa0M=');
+let GROQ_KEY=null;window.addEventListener('message',function(e){if(e.data&&e.data.groqKey)GROQ_KEY=e.data.groqKey;});
 let _aiResult=null;
 let _aiCallMode=false;
 
