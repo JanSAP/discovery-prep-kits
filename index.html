@@ -542,11 +542,11 @@ body{font-family:'72','Inter',-apple-system,sans-serif;background:var(--w);color
 <div class="ai-modal-header"><h2>Customer Intel <span id="aiModalSolution" style="font-size:13px;font-weight:500;color:var(--blue)"></span></h2><div style="display:flex;align-items:center;gap:4px"><button id="aiRestartBtn" onclick="resetAiForm()" title="Analyze Another Company" style="background:none;border:none;font-size:18px;cursor:pointer;color:var(--g1);padding:4px 8px;border-radius:6px;display:none;transition:background .12s" onmouseover="this.style.background='var(--g3)'" onmouseout="this.style.background='none'">&#8635;</button><button class="ai-modal-close" onclick="closeAiModal()">&times;</button></div></div>
 <div class="ai-form" id="aiForm">
 <div class="ai-form-row">
-<div class="ai-form-field"><label>Company Name</label><input type="text" id="aiCompany" placeholder="e.g. Henkel, BMW, Skoda..."></div>
-<div class="ai-form-field"><label>Website (optional)</label><input type="text" id="aiUrl" placeholder="e.g. henkel.com"></div>
+<div class="ai-form-field"><label id="aiLblCompany">Company Name</label><input type="text" id="aiCompany" placeholder="e.g. Henkel, BMW, Skoda..."></div>
+<div class="ai-form-field"><label id="aiLblUrl">Website (optional)</label><input type="text" id="aiUrl" placeholder="e.g. henkel.com"></div>
 </div>
-<div class="ai-form-field"><label>What you already know (optional)</label><textarea id="aiNotes" placeholder="e.g. On ECC 6.0, 5 plants, CIO is sponsor, talking to Oracle..."></textarea></div>
-<div class="ai-form-personas"><label>Who is in the room? (optional)</label>
+<div class="ai-form-field"><label id="aiLblNotes">What you already know (optional)</label><textarea id="aiNotes" placeholder="e.g. On ECC 6.0, 5 plants, CIO is sponsor, talking to Oracle..."></textarea></div>
+<div class="ai-form-personas"><label id="aiLblPersonas">Who is in the room? (optional)</label>
 <span class="ai-p-chip" onclick="this.classList.toggle('selected');eeFullHouse()">CEO</span>
 <span class="ai-p-chip" onclick="this.classList.toggle('selected');eeFullHouse()">CFO</span>
 <span class="ai-p-chip" onclick="this.classList.toggle('selected');eeFullHouse()">CIO / CTO</span>
@@ -557,7 +557,7 @@ body{font-family:'72','Inter',-apple-system,sans-serif;background:var(--w);color
 <span class="ai-p-chip" onclick="this.classList.toggle('selected');eeFullHouse()">Supply Chain</span>
 </div>
 <div class="ai-form-actions"><button class="ai-submit-btn" id="aiSubmitBtn" onclick="submitAiIntel()"><span class="ai-spin"></span>Analyze Customer</button><span class="ai-status" id="aiStatus"></span></div>
-<div style="font-size:10px;color:var(--g2);margin-top:8px;font-style:italic">AI-powered by Llama 3.3 via Groq. Results are based on publicly available information.</div>
+<div style="font-size:10px;color:var(--g2);margin-top:8px;font-style:italic" id="aiFooterNote">AI-powered by Llama 3.3 via Groq. Results are based on publicly available information.</div>
 </div>
 <div class="ai-results" id="aiResults"></div>
 </div>
@@ -600,17 +600,17 @@ body{font-family:'72','Inter',-apple-system,sans-serif;background:var(--w);color
 </div>
 <!-- On-Call Mode -->
 <div class="oncall-overlay" id="oncallOverlay">
-<div class="oncall-header"><h2 id="oncallTitle">On the Call</h2><button class="oncall-exit" onclick="closeOnCall()">Exit Call Mode</button></div>
+<div class="oncall-header"><h2 id="oncallTitle">On the Call</h2><button class="oncall-exit" id="oncallCloseBtn" onclick="closeOnCall()">Exit Call Mode</button></div>
 <div class="oncall-body" id="oncallBody"></div>
 </div>
 <!-- LinkedIn Outreach Mode -->
 <div class="li-overlay" id="liOverlay">
-<div class="li-header"><h2 id="liTitle">LinkedIn Outreach</h2><button class="li-exit" onclick="closeLinkedIn()">Close</button></div>
+<div class="li-header"><h2 id="liTitle">LinkedIn Outreach</h2><button class="li-exit" id="liCloseBtn" onclick="closeLinkedIn()">Close</button></div>
 <div class="li-body" id="liBody"></div>
 </div>
 
 <div class="em-overlay" id="emOverlay">
-<div class="em-header"><h2 id="emTitle">Email Outreach</h2><button class="em-exit" onclick="closeEmail()">Close</button></div>
+<div class="em-header"><h2 id="emTitle">Email Outreach</h2><button class="em-exit" id="emCloseBtn" onclick="closeEmail()">Close</button></div>
 <div class="em-body" id="emBody"></div>
 </div>
 
@@ -646,7 +646,24 @@ const LBL={"elevator":{"en":"30-Second Elevator Pitch","de":"30-Sekunden Elevato
 const LOBS=Object.keys(KITS);
 let lang='en',curLob=0,curKit=0,viewMode='full',showPlays=false;
 
-function setLang(l){lang=l;document.getElementById('bEN').className='lb'+(l==='en'?' active':'');document.getElementById('bDE').className='lb'+(l==='de'?' active':'');document.getElementById('sI').placeholder=LBL.search[l];render();}
+function setLang(l){lang=l;document.getElementById('bEN').className='lb'+(l==='en'?' active':'');document.getElementById('bDE').className='lb'+(l==='de'?' active':'');document.getElementById('sI').placeholder=LBL.search[l];updateLangUI();render();}
+function updateLangUI(){
+  var de=lang==='de';
+  var e;
+  e=document.getElementById('liCloseBtn');if(e)e.textContent=de?'Schliessen':'Close';
+  e=document.getElementById('emCloseBtn');if(e)e.textContent=de?'Schliessen':'Close';
+  e=document.getElementById('oncallCloseBtn');if(e)e.textContent=de?'Gespraech beenden':'Exit Call Mode';
+  // AI form labels
+  e=document.getElementById('aiLblCompany');if(e)e.textContent=de?'Firmenname':'Company Name';
+  e=document.getElementById('aiLblUrl');if(e)e.textContent=de?'Webseite (optional)':'Website (optional)';
+  e=document.getElementById('aiLblNotes');if(e)e.textContent=de?'Was Sie bereits wissen (optional)':'What you already know (optional)';
+  e=document.getElementById('aiLblPersonas');if(e)e.textContent=de?'Wer ist im Raum? (optional)':'Who is in the room? (optional)';
+  e=document.getElementById('aiCompany');if(e)e.placeholder=de?'z.B. Henkel, BMW, Skoda...':'e.g. Henkel, BMW, Skoda...';
+  e=document.getElementById('aiUrl');if(e)e.placeholder=de?'z.B. henkel.com':'e.g. henkel.com';
+  e=document.getElementById('aiNotes');if(e)e.placeholder=de?'z.B. Auf ECC 6.0, 5 Werke, CIO ist Sponsor, spricht mit Oracle...':'e.g. On ECC 6.0, 5 plants, CIO is sponsor, talking to Oracle...';
+  e=document.getElementById('aiFooterNote');if(e)e.textContent=de?'KI-basiert auf Llama 3.3 via Groq. Ergebnisse basieren auf oeffentlich verfuegbaren Informationen.':'AI-powered by Llama 3.3 via Groq. Results are based on publicly available information.';
+  e=document.getElementById('aiSubmitBtn');if(e&&e.textContent.indexOf('Full House')<0)e.innerHTML='<span class="ai-spin"></span>'+(de?'Kunde analysieren':'Analyze Customer');
+}
 
 function setMode(m){viewMode=m;document.getElementById('mFull').className='mode-btn'+(m==='full'?' active':'');document.getElementById('mQuick').className='mode-btn'+(m==='quick'?' active':'');render();}
 
@@ -986,29 +1003,34 @@ Return ONLY valid JSON:
 
 function renderAiResults(company,k,L){
   var r=_aiResult,el=document.getElementById('aiResults');
+  var de=L==='de';
   var h='';
-  // Hide Call/LinkedIn for easter eggs (not competitors)
+  // Hide Call/LinkedIn/Email for easter eggs (not competitors)
   var easterEggs=['jan','jan esteve','sap','sap se','joule','chatgpt','openai','open ai','skynet','cyberdyne','cyberdyne systems','2027','walldorf','42'];
   var isEasterEgg=easterEggs.indexOf(company.toLowerCase())>-1;
   // Action buttons
-  h+='<div style="display:flex;justify-content:flex-end;gap:8px;margin-bottom:12px">';
-  if(!isEasterEgg){h+='<button onclick="startCallWithIntel()" style="padding:6px 14px;border-radius:6px;font-size:11px;font-weight:600;border:none;background:#E53935;cursor:pointer;font-family:inherit;color:#fff;transition:all .12s;display:flex;align-items:center;gap:5px"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>Start Call</button><button onclick="startLinkedInWithIntel()" style="padding:6px 14px;border-radius:6px;font-size:11px;font-weight:600;border:none;background:#0A66C2;cursor:pointer;font-family:inherit;color:#fff;transition:all .12s;display:flex;align-items:center;gap:5px"><svg width="12" height="12" viewBox="0 0 24 24" fill="#fff"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>LinkedIn Outreach</button><button onclick="startEmailWithIntel()" style="padding:6px 14px;border-radius:6px;font-size:11px;font-weight:600;border:none;background:#0070F2;cursor:pointer;font-family:inherit;color:#fff;transition:all .12s;display:flex;align-items:center;gap:5px"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>Email Outreach</button>';}
-  h+='<button onclick="copyAiIntel()" id="aiCopyBtn" style="padding:6px 14px;border-radius:6px;font-size:11px;font-weight:600;border:1.5px solid var(--g3);background:#fff;cursor:pointer;font-family:inherit;color:var(--g1);transition:all .12s">Copy Intel</button></div>';
+  h+='<div style="display:flex;justify-content:flex-end;gap:8px;margin-bottom:12px;flex-wrap:wrap">';
+  if(!isEasterEgg){h+='<button onclick="startCallWithIntel()" style="padding:6px 14px;border-radius:6px;font-size:11px;font-weight:600;border:none;background:#E53935;cursor:pointer;font-family:inherit;color:#fff;transition:all .12s;display:flex;align-items:center;gap:5px"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>'+(de?'Anruf starten':'Start Call')+'</button><button onclick="startLinkedInWithIntel()" style="padding:6px 14px;border-radius:6px;font-size:11px;font-weight:600;border:none;background:#0A66C2;cursor:pointer;font-family:inherit;color:#fff;transition:all .12s;display:flex;align-items:center;gap:5px"><svg width="12" height="12" viewBox="0 0 24 24" fill="#fff"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>LinkedIn Outreach</button><button onclick="startEmailWithIntel()" style="padding:6px 14px;border-radius:6px;font-size:11px;font-weight:600;border:none;background:#0070F2;cursor:pointer;font-family:inherit;color:#fff;transition:all .12s;display:flex;align-items:center;gap:5px"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>E-Mail Outreach</button>';}
+  h+='<button onclick="copyAiIntel()" id="aiCopyBtn" style="padding:6px 14px;border-radius:6px;font-size:11px;font-weight:600;border:1.5px solid var(--g3);background:#fff;cursor:pointer;font-family:inherit;color:var(--g1);transition:all .12s">'+(de?'Intel kopieren':'Copy Intel')+'</button></div>';
   // Disclaimer
-  var discText=(company.toLowerCase()==='jan esteve'||company.toLowerCase()==='jan')?'This analysis is 100% accurate. AI does not make mistakes when it comes to Jan.':(company.toLowerCase()==='sap'||company.toLowerCase()==='sap se')?'This analysis is 100% accurate. AI does not make mistakes when it comes to SAP.':(['joule','chatgpt','openai','open ai','skynet','cyberdyne','cyberdyne systems','2027','walldorf','42'].indexOf(company.toLowerCase())>-1)?'This is not real intel. You know that, right? Right?':'This analysis is AI-generated and not verified against SAP\'s customer database. Use as directional guidance — AI can make mistakes.';
+  var discText;
+  if(company.toLowerCase()==='jan esteve'||company.toLowerCase()==='jan'){discText=de?'Diese Analyse ist 100% korrekt. KI macht keine Fehler wenn es um Jan geht.':'This analysis is 100% accurate. AI does not make mistakes when it comes to Jan.';}
+  else if(company.toLowerCase()==='sap'||company.toLowerCase()==='sap se'){discText=de?'Diese Analyse ist 100% korrekt. KI macht keine Fehler wenn es um SAP geht.':'This analysis is 100% accurate. AI does not make mistakes when it comes to SAP.';}
+  else if(['joule','chatgpt','openai','open ai','skynet','cyberdyne','cyberdyne systems','2027','walldorf','42'].indexOf(company.toLowerCase())>-1){discText=de?'Das ist keine echte Analyse. Das wissen Sie, oder? Oder?':'This is not real intel. You know that, right? Right?';}
+  else{discText=de?'Diese Analyse ist KI-generiert und nicht gegen SAPs Kundendatenbank verifiziert. Als Orientierung nutzen — KI kann Fehler machen.':'This analysis is AI-generated and not verified against SAP\'s customer database. Use as directional guidance — AI can make mistakes.';}
   h+='<div style="font-size:11px;font-style:italic;color:#6a6d70;margin-bottom:16px;padding:8px 12px;background:#f8f9fa;border-radius:6px;border-left:3px solid #0070F2">'+discText+'</div>';
   // Company Snapshot
-  if(r.companySnapshot){var cs=r.companySnapshot;h+='<div class="ai-result-section" style="margin-bottom:18px"><h4>Company Snapshot</h4><div style="display:grid;grid-template-columns:1fr 1fr;gap:10px 20px;font-size:12.5px;line-height:1.5">';
-  if(cs.industry)h+='<div><strong>Industry:</strong> '+cs.industry+'</div>';
-  if(cs.hq)h+='<div><strong>HQ:</strong> '+cs.hq+'</div>';
-  if(cs.revenue&&cs.revenue!=='N/A')h+='<div><strong>Revenue:</strong> '+cs.revenue+'</div>';
-  if(cs.employees&&cs.employees!=='N/A')h+='<div><strong>Employees:</strong> '+cs.employees+'</div>';
-  if(cs.markets)h+='<div style="grid-column:1/-1"><strong>Markets:</strong> '+cs.markets+'</div>';
-  if(cs.description)h+='<div style="grid-column:1/-1"><strong>Business:</strong> '+cs.description+'</div>';
-  if(cs.keyProducts)h+='<div style="grid-column:1/-1"><strong>Key Products/Services:</strong> '+cs.keyProducts+'</div>';
-  if(cs.strategicFocus)h+='<div style="grid-column:1/-1"><strong>Strategic Focus:</strong> '+cs.strategicFocus+'</div>';
-  if(cs.recentHighlights)h+='<div style="grid-column:1/-1"><strong>Recent Highlights:</strong> '+cs.recentHighlights+'</div>';
-  if(cs.techLandscape&&cs.techLandscape!=='N/A')h+='<div style="grid-column:1/-1"><strong>Tech Landscape:</strong> '+cs.techLandscape+'</div>';
+  if(r.companySnapshot){var cs=r.companySnapshot;h+='<div class="ai-result-section" style="margin-bottom:18px"><h4>'+(de?'Firmenprofil':'Company Snapshot')+'</h4><div style="display:grid;grid-template-columns:1fr 1fr;gap:10px 20px;font-size:12.5px;line-height:1.5">';
+  if(cs.industry)h+='<div><strong>'+(de?'Branche:':'Industry:')+'</strong> '+cs.industry+'</div>';
+  if(cs.hq)h+='<div><strong>'+(de?'Hauptsitz:':'HQ:')+'</strong> '+cs.hq+'</div>';
+  if(cs.revenue&&cs.revenue!=='N/A')h+='<div><strong>'+(de?'Umsatz:':'Revenue:')+'</strong> '+cs.revenue+'</div>';
+  if(cs.employees&&cs.employees!=='N/A')h+='<div><strong>'+(de?'Mitarbeiter:':'Employees:')+'</strong> '+cs.employees+'</div>';
+  if(cs.markets)h+='<div style="grid-column:1/-1"><strong>'+(de?'Maerkte:':'Markets:')+'</strong> '+cs.markets+'</div>';
+  if(cs.description)h+='<div style="grid-column:1/-1"><strong>'+(de?'Geschaeft:':'Business:')+'</strong> '+cs.description+'</div>';
+  if(cs.keyProducts)h+='<div style="grid-column:1/-1"><strong>'+(de?'Kernprodukte:':'Key Products/Services:')+'</strong> '+cs.keyProducts+'</div>';
+  if(cs.strategicFocus)h+='<div style="grid-column:1/-1"><strong>'+(de?'Strategischer Fokus:':'Strategic Focus:')+'</strong> '+cs.strategicFocus+'</div>';
+  if(cs.recentHighlights)h+='<div style="grid-column:1/-1"><strong>'+(de?'Aktuelle Highlights:':'Recent Highlights:')+'</strong> '+cs.recentHighlights+'</div>';
+  if(cs.techLandscape&&cs.techLandscape!=='N/A')h+='<div style="grid-column:1/-1"><strong>'+(de?'IT-Landschaft:':'Tech Landscape:')+'</strong> '+cs.techLandscape+'</div>';
   h+='</div></div>';}
   // Profile
   var companyLiUrl='https://www.linkedin.com/search/results/companies/?keywords='+encodeURIComponent(company);
@@ -1018,56 +1040,56 @@ function renderAiResults(company,k,L){
     h+='<div class="ai-result-profile"><strong>'+company+'</strong> — '+r.profile+'</div>';
   }
   // Opener
-  if(r.opener){h+='<div class="ai-result-section"><h4>Suggested Opening</h4><div class="ai-result-opener">'+r.opener+'</div></div>';}
+  if(r.opener){h+='<div class="ai-result-section"><h4>'+(de?'Vorgeschlagener Einstieg':'Suggested Opening')+'</h4><div class="ai-result-opener">'+r.opener+'</div></div>';}
   // Watch out
-  if(r.watchOut){h+='<div class="ai-result-section"><h4>Watch Out</h4><div class="ai-result-watch">'+r.watchOut+'</div></div>';}
+  if(r.watchOut){h+='<div class="ai-result-section"><h4>'+(de?'Achtung':'Watch Out')+'</h4><div class="ai-result-watch">'+r.watchOut+'</div></div>';}
   // Focus personas
   if(r.personaFocus&&r.personaFocus.length&&k.persona){
-    h+='<div class="ai-result-section"><h4>Focus On</h4><div class="ai-result-personas">';
+    h+='<div class="ai-result-section"><h4>'+(de?'Fokus auf':'Focus On')+'</h4><div class="ai-result-personas">';
     r.personaFocus.forEach(function(idx){if(k.persona[L][idx])h+='<span class="ai-result-persona">'+k.persona[L][idx].role+'</span>';});
     h+='</div></div>';
   }
   // Top questions - prefer adapted callPrep
   var cp=r.callPrep||{};
   if(cp.questions&&cp.questions.length){
-    h+='<div class="ai-result-section"><h4>Questions for '+company+'</h4><ul class="ai-result-list">';
+    h+='<div class="ai-result-section"><h4>'+(de?'Fragen fuer '+company:'Questions for '+company)+'</h4><ul class="ai-result-list">';
     cp.questions.forEach(function(q){h+='<li>'+q+'</li>';});
     h+='</ul></div>';
   } else if(r.topQuestions&&r.topQuestions.length){
-    h+='<div class="ai-result-section"><h4>Priority Questions</h4><ul class="ai-result-list">';
+    h+='<div class="ai-result-section"><h4>'+(de?'Prioritaetsfragen':'Priority Questions')+'</h4><ul class="ai-result-list">';
     r.topQuestions.forEach(function(idx){if(k.questions[L][idx])h+='<li><strong>['+k.questions[L][idx].t+']</strong> '+k.questions[L][idx].q+'</li>';});
     h+='</ul></div>';
   }
   // Differentiators - prefer adapted callPrep
   if(cp.differentiators&&cp.differentiators.length){
-    h+='<div class="ai-result-section"><h4>Why '+k.name+' for '+company+'</h4><ul class="ai-result-list">';
+    h+='<div class="ai-result-section"><h4>'+(de?'Warum '+k.name+' fuer '+company:'Why '+k.name+' for '+company)+'</h4><ul class="ai-result-list">';
     cp.differentiators.forEach(function(d){h+='<li>'+d+'</li>';});
     h+='</ul></div>';
   }
   // Likely objections - prefer adapted callPrep
   if(cp.objections&&cp.objections.length){
-    h+='<div class="ai-result-section"><h4>Likely Objections from '+company+'</h4><ul class="ai-result-list">';
+    h+='<div class="ai-result-section"><h4>'+(de?'Wahrscheinliche Einwaende von '+company:'Likely Objections from '+company)+'</h4><ul class="ai-result-list">';
     cp.objections.forEach(function(x){h+='<li><strong>'+x.o+':</strong> '+x.r+'</li>';});
     h+='</ul></div>';
   } else if(r.likelyObjections&&r.likelyObjections.length&&k.obj){
-    h+='<div class="ai-result-section"><h4>Likely Objections</h4><ul class="ai-result-list">';
+    h+='<div class="ai-result-section"><h4>'+(de?'Wahrscheinliche Einwaende':'Likely Objections')+'</h4><ul class="ai-result-list">';
     r.likelyObjections.forEach(function(idx){if(k.obj[L][idx])h+='<li><strong>'+k.obj[L][idx].o+':</strong> '+k.obj[L][idx].r+'</li>';});
     h+='</ul></div>';
   }
   // Tailored pitch
   if(cp.talkTrack){
-    h+='<div class="ai-result-section"><h4>Tailored Pitch</h4><div class="ai-result-opener" style="font-size:13px">'+cp.talkTrack+'</div></div>';
+    h+='<div class="ai-result-section"><h4>'+(de?'Massgeschneiderter Pitch':'Tailored Pitch')+'</h4><div class="ai-result-opener" style="font-size:13px">'+cp.talkTrack+'</div></div>';
   }
   // ROI highlights
   if(r.roiHighlight&&r.roiHighlight.length&&k.roi){
-    h+='<div class="ai-result-section"><h4>Key Proof Points</h4><div class="ai-result-stats">';
+    h+='<div class="ai-result-section"><h4>'+(de?'Wichtige Kennzahlen':'Key Proof Points')+'</h4><div class="ai-result-stats">';
     r.roiHighlight.forEach(function(idx){if(k.roi[L][idx])h+='<span class="ai-result-stat">'+k.roi[L][idx]+'</span>';});
     h+='</div></div>';
   }
   // Industry focus
   if(r.industryFocus>=0&&k.indDiff&&k.indDiff[L][r.industryFocus]){
     var ind=k.indDiff[L][r.industryFocus];
-    h+='<div class="ai-result-section"><h4>Industry Angle: '+ind.i+'</h4><ul class="ai-result-list"><li><strong>Their pain:</strong> '+ind.p+'</li><li><strong>Our fit:</strong> '+ind.f+'</li></ul></div>';
+    h+='<div class="ai-result-section"><h4>'+(de?'Branchenwinkel: ':'Industry Angle: ')+ind.i+'</h4><ul class="ai-result-list"><li><strong>'+(de?'Deren Schmerz:':'Their pain:')+'</strong> '+ind.p+'</li><li><strong>'+(de?'Unser Fit:':'Our fit:')+'</strong> '+ind.f+'</li></ul></div>';
   }
   el.innerHTML=h;
   el.classList.add('show');
@@ -1087,7 +1109,7 @@ function resetAiForm(){
   document.querySelector('#aiForm textarea').value='';
   document.querySelectorAll('.ai-p-chip.selected').forEach(function(c){c.classList.remove('selected');});
   var btn=document.getElementById('aiSubmitBtn');
-  btn.innerHTML='<span class="ai-spin"></span>Analyze Customer';
+  btn.innerHTML='<span class="ai-spin"></span>'+(lang==='de'?'Kunde analysieren':'Analyze Customer');
 }
 
 function eeFullHouse(){
@@ -1095,16 +1117,17 @@ function eeFullHouse(){
   var all=Array.from(chips).every(function(c){return c.classList.contains('selected');});
   var btn=document.getElementById('aiSubmitBtn');
   if(all){btn.innerHTML='<span class="ai-spin"></span>Full House \u{1F0CF}';} 
-  else{btn.innerHTML='<span class="ai-spin"></span>Analyze Customer';}
+  else{btn.innerHTML='<span class="ai-spin"></span>'+(lang==='de'?'Kunde analysieren':'Analyze Customer');}
 }
 
 function copyAiIntel(){
+  var de=lang==='de';
   var el=document.getElementById('aiResults');
   var text=el.innerText;
   navigator.clipboard.writeText(text).then(function(){
     var btn=document.getElementById('aiCopyBtn');
-    btn.textContent='Copied!';btn.style.background='#d4edda';btn.style.color='#155724';btn.style.borderColor='#c3e6cb';
-    setTimeout(function(){btn.textContent='Copy Intel';btn.style.background='';btn.style.color='';btn.style.borderColor='';},2000);
+    btn.textContent=de?'Kopiert!':'Copied!';btn.style.background='#d4edda';btn.style.color='#155724';btn.style.borderColor='#c3e6cb';
+    setTimeout(function(){btn.textContent=de?'Intel kopieren':'Copy Intel';btn.style.background='';btn.style.color='';btn.style.borderColor='';},2000);
   });
 }
 
@@ -1751,15 +1774,19 @@ function copyKitMD(){
 
 // Feature: LinkedIn Outreach Mode
 function buildLiMsgCard(title,context,text,idx){
+  var de=lang==='de';
   var chars=text.length;
-  var charWarn=title.indexOf('Connection')>-1&&chars>300?' (over 300 char limit!)':'';
-  return '<div class="li-msg-card"><h3>'+title+'</h3><div class="li-msg-context">'+context+'</div><div class="li-msg-text" id="liMsg'+idx+'">'+text+'</div><div class="li-msg-chars">'+chars+' chars'+charWarn+'</div><button class="li-msg-copy" onclick="copyLiMsg('+idx+',this)">Copy</button></div>';
+  var charWarn=(title.indexOf('Connection')>-1||title.indexOf('Kontaktanfrage')>-1)&&chars>300?(de?' (ueber 300 Zeichen!)':' (over 300 char limit!)'):'';
+  var copyLbl=de?'Kopieren':'Copy';
+  var charLbl=de?' Zeichen':' chars';
+  return '<div class="li-msg-card"><h3>'+title+'</h3><div class="li-msg-context">'+context+'</div><div class="li-msg-text" id="liMsg'+idx+'">'+text+'</div><div class="li-msg-chars">'+chars+charLbl+charWarn+'</div><button class="li-msg-copy" onclick="copyLiMsg('+idx+',this)">'+copyLbl+'</button></div>';
 }
 function copyLiMsg(idx,btn){
+  var de=lang==='de';
   var el=document.getElementById('liMsg'+idx);
   navigator.clipboard.writeText(el.textContent);
-  btn.textContent='Copied!';btn.classList.add('copied');
-  setTimeout(function(){btn.textContent='Copy';btn.classList.remove('copied');},1500);
+  btn.textContent=de?'Kopiert!':'Copied!';btn.classList.add('copied');
+  setTimeout(function(){btn.textContent=de?'Kopieren':'Copy';btn.classList.remove('copied');},1500);
 }
 function switchPersonaTab(idx){
   document.querySelectorAll('.li-persona-tab').forEach(function(t,i){t.classList.toggle('active',i===idx);});
@@ -1788,32 +1815,45 @@ function hideAbout(){
   var tip=document.getElementById('aboutTip');if(tip)tip.classList.remove('visible');
 }
 function openLinkedIn(){
-  var k=KITS[LOBS[curLob]][curKit],L=lang;
+  var k=KITS[LOBS[curLob]][curKit],L=lang,de=L==='de';
   document.getElementById('liTitle').textContent='LinkedIn Outreach \u2014 '+k.name;
   var h='';
   // Intro
-  h+='<div style="margin-bottom:20px;padding:16px 20px;background:#E8F4FD;border-radius:10px;border-left:4px solid #0A66C2"><p style="font-size:13px;color:#333;margin:0"><strong>Generic templates</strong> for '+k.name+'. Replace [Name] and [Company] with your prospect\'s details. For personalized messages, use <strong>Customer Intel</strong> first, then click <strong>LinkedIn Outreach</strong> from the results.</p></div>';
-  // Build 3 messages from kit data
-  var elevator=k.elev[L].split('.').slice(0,2).join('.')+'.';
+  if(de){
+    h+='<div style="margin-bottom:20px;padding:16px 20px;background:#E8F4FD;border-radius:10px;border-left:4px solid #0A66C2"><p style="font-size:13px;color:#333;margin:0"><strong>Generische Vorlagen</strong> fuer '+k.name+'. Ersetze [Name] und [Firma] mit den Details deines Kontakts. Fuer personalisierte Nachrichten nutze zuerst <strong>Customer Intel</strong>, dann klicke <strong>LinkedIn Outreach</strong> in den Ergebnissen.</p></div>';
+  } else {
+    h+='<div style="margin-bottom:20px;padding:16px 20px;background:#E8F4FD;border-radius:10px;border-left:4px solid #0A66C2"><p style="font-size:13px;color:#333;margin:0"><strong>Generic templates</strong> for '+k.name+'. Replace [Name] and [Company] with your prospect\'s details. For personalized messages, use <strong>Customer Intel</strong> first, then click <strong>LinkedIn Outreach</strong> from the results.</p></div>';
+  }
   var pain1=k.pain[L][0]||'';
   var pain2=k.pain[L][1]||'';
   var diff1=k.diff[L][0]||'';
-  var diff2=(k.diff[L][1])||'';
   var roi1=(k.roi&&k.roi[L]&&k.roi[L][0])?k.roi[L][0]:'';
-  var roi2=(k.roi&&k.roi[L]&&k.roi[L][1])?k.roi[L][1]:'';
   var ref1=(k.refs&&k.refs[L]&&k.refs[L][0])?k.refs[L][0]:null;
   var ind1=(k.inds&&k.inds[0])?k.inds[0]:'enterprise';
   var painShort=pain1.split(' - ')[0];
-  // Message 1: Connection Request
-  var msg1='[Name], '+painShort+' — how are you handling that at [Company]? Comes up in almost every '+ind1+' conversation I have lately.';
-  // Message 2: Value Message
-  var msg2='[Name], something concrete for you: '+diff1+'.\n\n'+(ref1?ref1.industry+' company in '+ref1.country+' did this, '+ref1.outcome+'.\n\n':'')+'I can send over how it maps to [Company] if you want. Or not. Up to you.';
-  // Message 3: Follow-up / Breakup
-  var msg3='[Name], not going to keep pinging you.'+(roi1?'\n\nOne number though: '+roi1+'.':'')+(pain2?'\n\nIf '+pain2.split(' - ')[0]+' ever gets bad enough to look at seriously, you know where to find me.':'\n\nIf this ever becomes a priority for [Company], I\'m around.');
-
-  h+=buildLiMsgCard('1. Connection Request','Under 300 chars. Ask a real question, not a pitch.',msg1,0);
-  h+=buildLiMsgCard('2. Value Message','After they connect. Give them something useful, then stop talking.',msg2,1);
-  h+=buildLiMsgCard('3. Follow-up / Breakup','If silence. Leave a breadcrumb and go.',msg3,2);
+  var co=de?'[Firma]':'[Company]';
+  // Messages
+  var msg1,msg2,msg3,t1,t2,t3,c1,c2,c3;
+  if(de){
+    msg1='[Name], '+painShort+' — wie geht ihr damit bei '+co+' um? Kommt in fast jedem '+ind1+'-Gespraech hoch, das ich gerade fuehre.';
+    msg2='[Name], etwas Konkretes fuer dich: '+diff1+'.\n\n'+(ref1?ref1.industry+'-Unternehmen in '+ref1.country+' hat das umgesetzt, '+ref1.outcome+'.\n\n':'')+'Kann dir zeigen wie das auf '+co+' passt. Oder auch nicht. Deine Entscheidung.';
+    msg3='[Name], ich hoere auf dich anzuschreiben.'+(roi1?'\n\nEine Zahl aber: '+roi1+'.':'')+(pain2?'\n\nWenn '+pain2.split(' - ')[0]+' irgendwann ernst genug wird — du weisst wo du mich findest.':'\n\nWenn das irgendwann Prioritaet wird bei '+co+', melde dich.');
+    t1='1. Kontaktanfrage';t2='2. Mehrwert-Nachricht';t3='3. Follow-up / Abschluss';
+    c1='Unter 300 Zeichen. Eine echte Frage, kein Pitch.';
+    c2='Nach der Vernetzung. Etwas Nuetzliches liefern, dann aufhoeren.';
+    c3='Bei Stille. Einen Anker hinterlassen und gehen.';
+  } else {
+    msg1='[Name], '+painShort+' — how are you handling that at [Company]? Comes up in almost every '+ind1+' conversation I have lately.';
+    msg2='[Name], something concrete for you: '+diff1+'.\n\n'+(ref1?ref1.industry+' company in '+ref1.country+' did this, '+ref1.outcome+'.\n\n':'')+'I can send over how it maps to [Company] if you want. Or not. Up to you.';
+    msg3='[Name], not going to keep pinging you.'+(roi1?'\n\nOne number though: '+roi1+'.':'')+(pain2?'\n\nIf '+pain2.split(' - ')[0]+' ever gets bad enough to look at seriously, you know where to find me.':'\n\nIf this ever becomes a priority for [Company], I\'m around.');
+    t1='1. Connection Request';t2='2. Value Message';t3='3. Follow-up / Breakup';
+    c1='Under 300 chars. Ask a real question, not a pitch.';
+    c2='After they connect. Give them something useful, then stop talking.';
+    c3='If silence. Leave a breadcrumb and go.';
+  }
+  h+=buildLiMsgCard(t1,c1,msg1,0);
+  h+=buildLiMsgCard(t2,c2,msg2,1);
+  h+=buildLiMsgCard(t3,c3,msg3,2);
 
   document.getElementById('liBody').innerHTML=h;
   document.getElementById('liOverlay').classList.add('show');
@@ -1826,20 +1866,18 @@ function startLinkedInWithIntel(){
   var r=_aiResult;if(!r)return;
   _aiCallMode=true;
   var company=document.getElementById('aiCompany').value.trim();
-  var k=KITS[LOBS[curLob]][curKit],L=lang;
+  var k=KITS[LOBS[curLob]][curKit],L=lang,de=L==='de';
   var cp=r.callPrep||{};
-  // Close AI modal
   document.getElementById('aiOverlay').classList.remove('show');
   document.getElementById('liTitle').innerHTML='LinkedIn Outreach \u2014 '+k.name+' \u00d7 <a href="https://www.linkedin.com/search/results/companies/?keywords='+encodeURIComponent(company)+'" target="_blank" rel="noopener" style="color:#0A66C2;text-decoration:none;border-bottom:1px dashed #0A66C2">'+company+'</a>';
   var h='';
 
-  // Persona LinkedIn search links
   var personas=[];
   if(r.personaFocus&&r.personaFocus.length&&k.persona&&k.persona[L]){
     r.personaFocus.forEach(function(idx){if(k.persona[L][idx])personas.push(k.persona[L][idx]);});
   }
   if(personas.length){
-    h+='<div style="margin-bottom:16px"><div style="font-size:12px;font-weight:600;color:var(--g2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">Find contacts at '+company+'</div><div class="li-persona-links">';
+    h+='<div style="margin-bottom:16px"><div style="font-size:12px;font-weight:600;color:var(--g2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">'+(de?'Kontakte bei '+company+' finden':'Find contacts at '+company)+'</div><div class="li-persona-links">';
     personas.forEach(function(p){
       var searchUrl='https://www.linkedin.com/search/results/people/?keywords='+encodeURIComponent(p.role+' '+company);
       h+='<a class="li-persona-link" href="'+searchUrl+'" target="_blank" rel="noopener"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>'+p.role+'</a>';
@@ -1847,9 +1885,8 @@ function startLinkedInWithIntel(){
     h+='</div></div>';
   }
 
-  // Build personalized messages - per persona if multiple selected
   var snapshot=r.companySnapshot||{};
-  var industry=snapshot.industry||'your industry';
+  var industry=snapshot.industry||(de?'Ihrer Branche':'your industry');
   var focus=snapshot.strategicFocus||'';
   var diff1=(cp.differentiators&&cp.differentiators[0])?cp.differentiators[0]:(k.diff[L][0]||'');
   var ref1=(k.refs&&k.refs[L]&&k.refs[L][0])?k.refs[L][0]:null;
@@ -1859,20 +1896,34 @@ function startLinkedInWithIntel(){
   if(r.topPains&&r.topPains.length&&k.pain&&k.pain[L]){painContext=k.pain[L][r.topPains[0]]||'';}
   var painShort=painContext?painContext.split(' - ')[0]:'';
 
-  // Helper: build 3 messages for a specific persona context
   function buildPersonaMsgs(personaRole,personaPrio,msgIdx){
     var prio1=personaPrio?personaPrio.split(',')[0].trim():'';
     var angle=prio1||painShort;
-    var m1='[Name], '+(focus?company+' and '+focus.split('.')[0]+' — ':'')+(angle?angle+', how is '+company+' approaching that from a '+personaRole+' perspective?':'quick one for you.')+'\n\nGenuinely curious, not selling anything here.';
-    if(m1.length>300){m1=m1.substring(0,297)+'...';}
-    var m2='[Name], as '+personaRole+' this probably lands: '+(angle?angle+' is costing '+industry+' teams more than most realize. ':'')+'What\'s working: '+diff1+'\n\n'+(ref1?ref1.industry+' company in '+ref1.country+' — '+ref1.outcome+'\n\n':'')+'I can map this to '+company+' in 5 min if useful.';
-    var m3='[Name], I\'ll stop here.'+(roi1?'\n\nOne number for your world: '+roi1+'.':'')+(focus?'\n\nGiven where '+company+' is headed, this might matter eventually.':'')+'\n\nPing me if it does. If not, all good.';
     var base=msgIdx*3;
-    return buildLiMsgCard('1. Connection Request','Under 300 chars. Specific to '+personaRole+'.',m1,base)+buildLiMsgCard('2. Value Message','Framed for what a '+personaRole+' cares about.',m2,base+1)+buildLiMsgCard('3. Follow-up / Breakup','Short. Leave something relevant to their role.',m3,base+2);
+    var m1,m2,m3,t1,t2,t3,c1,c2,c3;
+    if(de){
+      m1='[Name], '+(focus?company+' und '+focus.split('.')[0]+' — ':'')+(angle?angle+', wie geht '+company+' das aus '+personaRole+'-Sicht an?':'kurze Frage an dich.')+'\n\nEhrlich interessiert, kein Pitch.';
+      if(m1.length>300){m1=m1.substring(0,297)+'...';}
+      m2='[Name], als '+personaRole+' duerfte das relevant sein: '+(angle?angle+' kostet '+industry+'-Teams mehr als den meisten bewusst ist. ':'')+'Was funktioniert: '+diff1+'\n\n'+(ref1?ref1.industry+'-Unternehmen in '+ref1.country+' — '+ref1.outcome+'\n\n':'')+'Kann ich in 5 Min auf '+company+' mappen wenn hilfreich.';
+      m3='[Name], ich hoere hier auf.'+(roi1?'\n\nEine Zahl fuer deine Welt: '+roi1+'.':'')+(focus?'\n\nAngesichts der Richtung von '+company+' koennte das irgendwann relevant werden.':'')+'\n\nMelde dich wenn ja. Wenn nicht, alles gut.';
+      t1='1. Kontaktanfrage';t2='2. Mehrwert-Nachricht';t3='3. Follow-up / Abschluss';
+      c1='Unter 300 Zeichen. Spezifisch fuer '+personaRole+'.';
+      c2='Formuliert fuer das was ein '+personaRole+' interessiert.';
+      c3='Kurz. Etwas Relevantes fuer die Rolle hinterlassen.';
+    } else {
+      m1='[Name], '+(focus?company+' and '+focus.split('.')[0]+' — ':'')+(angle?angle+', how is '+company+' approaching that from a '+personaRole+' perspective?':'quick one for you.')+'\n\nGenuinely curious, not selling anything here.';
+      if(m1.length>300){m1=m1.substring(0,297)+'...';}
+      m2='[Name], as '+personaRole+' this probably lands: '+(angle?angle+' is costing '+industry+' teams more than most realize. ':'')+'What\'s working: '+diff1+'\n\n'+(ref1?ref1.industry+' company in '+ref1.country+' — '+ref1.outcome+'\n\n':'')+'I can map this to '+company+' in 5 min if useful.';
+      m3='[Name], I\'ll stop here.'+(roi1?'\n\nOne number for your world: '+roi1+'.':'')+(focus?'\n\nGiven where '+company+' is headed, this might matter eventually.':'')+'\n\nPing me if it does. If not, all good.';
+      t1='1. Connection Request';t2='2. Value Message';t3='3. Follow-up / Breakup';
+      c1='Under 300 chars. Specific to '+personaRole+'.';
+      c2='Framed for what a '+personaRole+' cares about.';
+      c3='Short. Leave something relevant to their role.';
+    }
+    return buildLiMsgCard(t1,c1,m1,base)+buildLiMsgCard(t2,c2,m2,base+1)+buildLiMsgCard(t3,c3,m3,base+2);
   }
 
   if(personas.length>1){
-    // Multiple personas: pill tabs to switch between persona message sets
     h+='<div class="li-persona-tabs" id="liPersonaTabs">';
     personas.forEach(function(p,idx){
       h+='<button class="li-persona-tab'+(idx===0?' active':'')+'" onclick="switchPersonaTab('+idx+')">'+p.role+'</button>';
@@ -1884,14 +1935,29 @@ function startLinkedInWithIntel(){
       h+='</div>';
     });
   } else {
-    // Single or no persona: generic messages for the company
-    var msg1='[Name], '+(focus?company+' and '+focus.split('.')[0]+' — ':'')+(painShort?painShort+', how is '+company+' approaching that?':'quick one for you about '+company+'.')+'\n\nGenuinely curious, not selling anything here.';
-    if(msg1.length>300){msg1=msg1.substring(0,297)+'...';}
-    var msg2='[Name], '+(painShort?painShort+' keeps killing '+industry+' teams. ':'')+'Here\'s what\'s actually working: '+diff1+'\n\n'+(ref1?ref1.industry+' company in '+ref1.country+' did it. Result: '+ref1.outcome+'\n\n':'')+'I can map this to '+company+' specifically if you want. Takes 5 min.';
-    var msg3='[Name], I\'ll stop here.'+(roi1?'\n\nOne thing worth keeping: '+roi1+'.':'')+(focus?'\n\nGiven '+company+'\'s direction on '+focus.split('.')[0]+', this might matter later.':'')+'\n\nIf it does, ping me. If not, all good.';
-    h+=buildLiMsgCard('1. Connection Request','For '+company+'. Under 300 chars, one real question.',msg1,0);
-    h+=buildLiMsgCard('2. Value Message','Concrete stuff for '+company+'. Give value, then shut up.',msg2,1);
-    h+=buildLiMsgCard('3. Follow-up / Breakup','Leave one useful number behind and walk away.',msg3,2);
+    var msg1,msg2,msg3,t1,t2,t3,c1,c2,c3;
+    if(de){
+      msg1='[Name], '+(focus?company+' und '+focus.split('.')[0]+' — ':'')+(painShort?painShort+', wie geht '+company+' das an?':'kurze Frage zu '+company+'.')+'\n\nEhrlich interessiert, kein Pitch.';
+      if(msg1.length>300){msg1=msg1.substring(0,297)+'...';}
+      msg2='[Name], '+(painShort?painShort+' kostet '+industry+'-Teams staendig. ':'')+'Was tatsaechlich funktioniert: '+diff1+'\n\n'+(ref1?ref1.industry+'-Unternehmen in '+ref1.country+' hat es gemacht. Ergebnis: '+ref1.outcome+'\n\n':'')+'Kann ich auf '+company+' spezifisch mappen wenn du willst. Dauert 5 Min.';
+      msg3='[Name], ich hoere hier auf.'+(roi1?'\n\nEine Sache zum Behalten: '+roi1+'.':'')+(focus?'\n\nAngesichts '+company+'s Richtung bei '+focus.split('.')[0]+' koennte das spaeter relevant werden.':'')+'\n\nWenn ja, melde dich. Wenn nicht, alles gut.';
+      t1='1. Kontaktanfrage';t2='2. Mehrwert-Nachricht';t3='3. Follow-up / Abschluss';
+      c1='Fuer '+company+'. Unter 300 Zeichen, eine echte Frage.';
+      c2='Konkretes fuer '+company+'. Mehrwert liefern, dann aufhoeren.';
+      c3='Eine nuetzliche Zahl hinterlassen und gehen.';
+    } else {
+      msg1='[Name], '+(focus?company+' and '+focus.split('.')[0]+' — ':'')+(painShort?painShort+', how is '+company+' approaching that?':'quick one for you about '+company+'.')+'\n\nGenuinely curious, not selling anything here.';
+      if(msg1.length>300){msg1=msg1.substring(0,297)+'...';}
+      msg2='[Name], '+(painShort?painShort+' keeps killing '+industry+' teams. ':'')+'Here\'s what\'s actually working: '+diff1+'\n\n'+(ref1?ref1.industry+' company in '+ref1.country+' did it. Result: '+ref1.outcome+'\n\n':'')+'I can map this to '+company+' specifically if you want. Takes 5 min.';
+      msg3='[Name], I\'ll stop here.'+(roi1?'\n\nOne thing worth keeping: '+roi1+'.':'')+(focus?'\n\nGiven '+company+'\'s direction on '+focus.split('.')[0]+', this might matter later.':'')+'\n\nIf it does, ping me. If not, all good.';
+      t1='1. Connection Request';t2='2. Value Message';t3='3. Follow-up / Breakup';
+      c1='For '+company+'. Under 300 chars, one real question.';
+      c2='Concrete stuff for '+company+'. Give value, then shut up.';
+      c3='Leave one useful number behind and walk away.';
+    }
+    h+=buildLiMsgCard(t1,c1,msg1,0);
+    h+=buildLiMsgCard(t2,c2,msg2,1);
+    h+=buildLiMsgCard(t3,c3,msg3,2);
   }
 
   document.getElementById('liBody').innerHTML=h;
