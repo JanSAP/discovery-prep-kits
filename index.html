@@ -3,6 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="author" content="Jan Esteve">
+<meta name="creator" content="Jan Esteve">
+<meta name="description" content="Discovery Prep Kits - SAP Sales Development Enablement Tool. Built by Jan Esteve, Data, Assets & Campaigns @ MEE.">
 <title>Discovery Prep Kits | SAP Sales Enablement</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
@@ -451,6 +454,12 @@ body{font-family:'72','Inter',-apple-system,sans-serif;background:var(--w);color
 .li-persona-link{display:flex;align-items:center;gap:6px;background:#E8F4FD;border:1px solid #0A66C2;border-radius:20px;padding:6px 14px;font-size:12px;font-weight:600;color:#0A66C2;text-decoration:none;transition:all .15s}
 .li-persona-link:hover{background:#0A66C2;color:#fff}
 .li-persona-link svg{flex-shrink:0}
+.li-persona-tabs{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:20px;padding-bottom:16px;border-bottom:1px solid #e1e2e6}
+.li-persona-tab{padding:7px 16px;border-radius:20px;font-size:12px;font-weight:600;border:1.5px solid #c4c6c8;background:#fff;color:var(--g2);cursor:pointer;font-family:inherit;transition:all .15s}
+.li-persona-tab.active{background:#0A66C2;border-color:#0A66C2;color:#fff}
+.li-persona-tab:not(.active):hover{border-color:#0A66C2;color:#0A66C2}
+.li-persona-panel{display:none}
+.li-persona-panel.active{display:block}
 .li-msg-card{background:#fff;border:1px solid #e8eaed;border-radius:12px;padding:20px 24px;margin-bottom:16px;position:relative}
 .li-msg-card h3{font-size:13px;font-weight:700;color:#0A66C2;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px}
 .li-msg-card .li-msg-context{font-size:11px;color:var(--g2);margin-bottom:12px}
@@ -461,6 +470,22 @@ body{font-family:'72','Inter',-apple-system,sans-serif;background:var(--w);color
 .li-msg-copy.copied{background:#d4edda;color:#155724}
 .tool-icon-btn.linkedin{background:#0A66C2;color:#fff}
 .tool-icon-btn.linkedin:hover{background:#004182;transform:translateY(-1px)}
+/* About tooltip (on footer hover) */
+.about-tooltip{display:none;position:absolute;bottom:100%;left:50%;transform:translateX(-50%);background:#fff;border-radius:10px;box-shadow:0 8px 28px rgba(0,0,0,.15);padding:16px 20px;width:280px;margin-bottom:8px;border:1px solid #e1e2e6;animation:aboutTipIn .15s ease;z-index:100}
+.kf{position:relative}
+.kf:hover .about-tooltip{display:block}
+@keyframes aboutTipIn{from{opacity:0;transform:translateX(-50%) translateY(4px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
+.about-table{width:100%;border-collapse:collapse}
+.about-table tr td{padding:4px 0;font-size:12px;vertical-align:top;text-align:left}
+.about-table tr td:first-child{font-weight:600;color:var(--g2);width:100px;white-space:nowrap}
+.about-table tr td:last-child{color:var(--g1)}
+.about-divider{height:1px;background:#e1e2e6;margin:10px 0}
+/* Splash screen */
+#splash{position:fixed;inset:0;background:#fff;z-index:99999;display:flex;align-items:center;justify-content:center;flex-direction:column}
+#splash.out{animation:splashOut .5s ease forwards}
+@keyframes splashOut{to{opacity:0;transform:translateY(-20px)}}
+#splash svg{width:140px;animation:splashPulse 1.2s ease-in-out}
+@keyframes splashPulse{0%{opacity:0;transform:scale(.85)}40%{opacity:1;transform:scale(1.02)}60%{transform:scale(1)}100%{transform:scale(1)}}
 .oncall-warn-item{flex-shrink:0;background:#fff;border:1px solid #FFCDD2;border-radius:8px;padding:8px 14px;font-size:13px;color:#B71C1C;line-height:1.4;max-width:280px}
 /* On-call section toggle */
 .oc-tog{float:right;font-size:10px;transition:transform .2s;display:inline-block}
@@ -480,6 +505,9 @@ body{font-family:'72','Inter',-apple-system,sans-serif;background:var(--w);color
 </style>
 </head>
 <body>
+<div id="splash">
+<svg viewBox="0 0 412.4 204" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="splashG" x1="206.19" y1="206" x2="206.19" y2="2" gradientUnits="userSpaceOnUse" gradientTransform="matrix(1 0 0 -1 0 206)"><stop offset="0" stop-color="#00B8F1"/><stop offset=".02" stop-color="#01B6F0"/><stop offset=".31" stop-color="#0D90D9"/><stop offset=".58" stop-color="#1775C8"/><stop offset=".82" stop-color="#1C65BF"/><stop offset="1" stop-color="#1E5FBB"/></linearGradient></defs><polyline fill="url(#splashG)" points="0,204 208.4,204 412.4,0 0,0"/><path fill="#FFF" d="M244.7,38.4h-40.6v96.5l-35.5-96.6h-35.2l-30.3,80.7C100,98.7,79,91.7,62.4,86.4C51.5,82.9,39.8,77.7,40,72c.1-4.7,6.2-9,18.4-8.4c8.2.4,15.4,1.1,29.7,8l14.1-24.5c-13.1-6.6-31.2-10.9-46-10.9h-.1c-17.3,0-31.7,5.6-40.6,14.8c-6.2,6.3-9.7,14.8-9.7,23.7C5.5,87.2,10.1,96,19.7,103c8.1,5.9,18.5,9.8,27.6,12.6c11.3,3.5,20.5,6.5,20.4,13c-.1,2.4-1,4.7-2.7,6.4c-2.8,2.9-7.1,4-13.1,4.1c-11.5.2-20-1.6-33.6-9.6L5.8,154.4c14,8,29.9,12.2,46,12.2h2.1c14.2-.2,25.7-4.3,34.9-11.7c.5-.4,1-.8,1.5-1.3l-4.1,10.9H123l6.2-18.8c7,2.3,14.3,3.5,21.7,3.4c7.2,0,14.3-1.1,21.2-3.2l6,18.6h60.1v-39h13.1c31.7,0,50.5-16.2,50.5-43.2C301.7,52.2,283.5,38.4,244.7,38.4z M150.9,121c-4.4,0-8.8-.7-13-2.3l12.9-40.6h.2l12.6,40.7C159.6,120.3,155.2,121,150.9,121z M247.1,97.7h-8.9V64.9h8.9c11.9,0,21.4,4,21.4,16.1C268.5,93.7,259,97.6,247.1,97.7"/></svg>
+</div>
 <div class="ee-toast" id="eeToast"></div>
 <div class="ee-red-overlay" id="eeRedOvl"></div>
 <div class="ee-fax" id="eeFax"><div class="ee-fax-line"></div></div>
@@ -704,7 +732,7 @@ html+=sec('sx',LBL.dont[L],'X',k.dont[L].map(x=>`<li>${x}</li>`).join(''),'dont'
 html+=`<div class="sec" data-sec="inds"><div class="sh" onclick="togSec('inds')"><div class="ic" style="background:var(--g3);color:var(--g1)">&#9679;</div><h3>${LBL.industries[L]}</h3><div class="sh-tog${collapsed.inds?' collapsed':''}" id="tog-inds">&#9660;</div></div><div class="it${collapsed.inds?' hidden':''}" id="sb-inds">${k.inds.map(x=>`<span class="itg">${x}</span>`).join('')}</div></div>`;
 }
 
-html+=`</div><div class="kit-actions"><button class="kit-act" onclick="openPrep()"><span class="kit-act-icon">&#9745;</span><span class="kit-act-label">${L==='en'?'Meeting Prep':'Meeting-Vorbereitung'}</span></button><button class="kit-act" onclick="openSummary()"><span class="kit-act-icon">&#9998;</span><span class="kit-act-label">${L==='en'?'Post-Discovery':'Nach dem Discovery'}</span></button><button class="kit-act" onclick="openQuiz()"><span class="kit-act-icon">&#9889;</span><span class="kit-act-label">${L==='en'?'Self-Check Quiz':'Selbsttest'}</span></button></div><div class="kf">Discovery Prep Kit &mdash; SAP Data, Assets &amp; Campaigns @ MEE &mdash; Last updated: May, 2026</div></div>`;
+html+=`</div><div class="kit-actions"><button class="kit-act" onclick="openPrep()"><span class="kit-act-icon">&#9745;</span><span class="kit-act-label">${L==='en'?'Meeting Prep':'Meeting-Vorbereitung'}</span></button><button class="kit-act" onclick="openSummary()"><span class="kit-act-icon">&#9998;</span><span class="kit-act-label">${L==='en'?'Post-Discovery':'Nach dem Discovery'}</span></button><button class="kit-act" onclick="openQuiz()"><span class="kit-act-icon">&#9889;</span><span class="kit-act-label">${L==='en'?'Self-Check Quiz':'Selbsttest'}</span></button></div><div class="kf" onmouseenter="showAbout()"><div class="about-tooltip" id="aboutTip"><div style="display:grid;grid-template-columns:100px 1fr;gap:4px 8px;font-size:12px"><span style="font-weight:600;color:#555">Built by</span><span>Jan Esteve</span><span style="font-weight:600;color:#555">Team</span><span>Data, Assets &amp; Campaigns @ MEE</span><span style="font-weight:600;color:#555">Version</span><span>2</span><span style="font-weight:600;color:#555">Released</span><span>May 2026</span><span style="font-weight:600;color:#555">Region</span><span>MEE (Middle &amp; Eastern Europe)</span></div><div class="about-divider"></div><div style="display:grid;grid-template-columns:100px 1fr;gap:4px 8px;font-size:12px"><span style="font-weight:600;color:#555">Kits loaded</span><span id="aboutKitCount">-</span><span style="font-weight:600;color:#555">Languages</span><span>English, German</span><span style="font-weight:600;color:#555">Data points</span><span id="aboutDataPoints">-</span></div></div>Discovery Prep Kit &mdash; SAP Data, Assets &amp; Campaigns @ MEE &mdash; Last updated: May, 2026</div></div>`;
 document.getElementById('kV').innerHTML=html;
 document.getElementById('kV').scrollTop=0;
 if(typeof updateURL==='function')updateURL();
@@ -1687,6 +1715,19 @@ function copyLiMsg(idx,btn){
   btn.textContent='Copied!';btn.classList.add('copied');
   setTimeout(function(){btn.textContent='Copy';btn.classList.remove('copied');},1500);
 }
+function switchPersonaTab(idx){
+  document.querySelectorAll('.li-persona-tab').forEach(function(t,i){t.classList.toggle('active',i===idx);});
+  document.querySelectorAll('.li-persona-panel').forEach(function(p,i){p.classList.toggle('active',i===idx);});
+}
+function toggleAbout(){}
+function closeAboutOnClick(){}
+function showAbout(){
+  var totalKits=0;var totalData=0;
+  Object.keys(KITS).forEach(function(lob){totalKits+=KITS[lob].length;KITS[lob].forEach(function(k){totalData+=(k.pain.en||[]).length+(k.questions.en||[]).length+(k.diff.en||[]).length+(k.obj?k.obj.en.length:0)+(k.refs?k.refs.en.length:0)+(k.roi?k.roi.en.length:0);});});
+  var el1=document.getElementById('aboutKitCount');if(el1)el1.textContent=totalKits;
+  var el2=document.getElementById('aboutDataPoints');if(el2)el2.textContent=totalData+'+';
+}
+function hideAbout(){}
 function openLinkedIn(){
   var k=KITS[LOBS[curLob]][curKit],L=lang;
   document.getElementById('liTitle').textContent='LinkedIn Outreach \u2014 '+k.name;
@@ -1772,9 +1813,14 @@ function startLinkedInWithIntel(){
   }
 
   if(personas.length>1){
-    // Multiple personas: generate separate message sets per persona
+    // Multiple personas: pill tabs to switch between persona message sets
+    h+='<div class="li-persona-tabs" id="liPersonaTabs">';
     personas.forEach(function(p,idx){
-      h+='<div style="margin-top:'+(idx?'24':'0')+'px;padding-top:'+(idx?'20':'0')+'px;border-top:'+(idx?'1px solid #e1e2e6':'none')+'"><div style="font-size:12px;font-weight:700;color:#0A66C2;margin-bottom:12px;display:flex;align-items:center;gap:6px"><svg width="13" height="13" viewBox="0 0 24 24" fill="#0A66C2"><path d="M12 12c2.761 0 5-2.239 5-5s-2.239-5-5-5-5 2.239-5 5 2.239 5 5 5zm0 2c-3.315 0-10 1.658-10 5v2h20v-2c0-3.342-6.685-5-10-5z"/></svg>Messages for '+p.role+'</div>';
+      h+='<button class="li-persona-tab'+(idx===0?' active':'')+'" onclick="switchPersonaTab('+idx+')">'+p.role+'</button>';
+    });
+    h+='</div>';
+    personas.forEach(function(p,idx){
+      h+='<div class="li-persona-panel'+(idx===0?' active':'')+'" id="liPersonaPanel'+idx+'">';
       h+=buildPersonaMsgs(p.role,p.msg,idx);
       h+='</div>';
     });
@@ -1953,4 +1999,6 @@ function closeOnCall(){
 loadFromURL();
 document.getElementById('sI').placeholder=LBL.search[lang];
 initNav();render();
+// Splash screen: show for 1.2s then fade out
+setTimeout(function(){var s=document.getElementById('splash');s.classList.add('out');setTimeout(function(){s.style.display='none';},500);},1200);
 </script></body></html>
