@@ -470,10 +470,34 @@ body{font-family:'72','Inter',-apple-system,sans-serif;background:var(--w);color
 .li-msg-copy.copied{background:#d4edda;color:#155724}
 .tool-icon-btn.linkedin{background:#0A66C2;color:#fff}
 .tool-icon-btn.linkedin:hover{background:#004182;transform:translateY(-1px)}
+.tool-icon-btn.email{background:#0070F2;color:#fff}
+.tool-icon-btn.email:hover{background:#0054B4;transform:translateY(-1px)}
+/* Email overlay */
+.em-overlay{position:fixed;inset:0;background:#fafbfc;z-index:8500;display:none;flex-direction:column}
+.em-overlay.show{display:flex}
+.em-header{display:flex;align-items:center;justify-content:space-between;padding:12px 24px;border-bottom:2px solid #0070F2;background:#fff;flex-shrink:0}
+.em-header h2{font-size:16px;color:var(--deep)}
+.em-exit{background:#0070F2;color:#fff;border:none;padding:8px 20px;border-radius:8px;cursor:pointer;font-size:13px;font-weight:600}
+.em-exit:hover{background:#0054B4}
+.em-body{flex:1;overflow-y:auto;padding:24px;max-width:900px;margin:0 auto;width:100%}
+.em-persona-tabs{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:20px;padding-bottom:16px;border-bottom:1px solid #e1e2e6}
+.em-persona-tab{padding:7px 16px;border-radius:20px;font-size:12px;font-weight:600;border:1.5px solid #c4c6c8;background:#fff;color:var(--g2);cursor:pointer;font-family:inherit;transition:all .15s}
+.em-persona-tab.active{background:#0070F2;border-color:#0070F2;color:#fff}
+.em-persona-tab:not(.active):hover{border-color:#0070F2;color:#0070F2}
+.em-persona-panel{display:none}
+.em-persona-panel.active{display:block}
+.em-msg-card{background:#fff;border:1px solid #e8eaed;border-radius:12px;padding:20px 24px;margin-bottom:16px;position:relative}
+.em-msg-card h3{font-size:13px;font-weight:700;color:#0070F2;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px}
+.em-msg-card .em-msg-context{font-size:11px;color:var(--g2);margin-bottom:12px}
+.em-msg-card .em-msg-subj{font-size:13px;font-weight:600;color:#222;margin-bottom:10px;padding:8px 12px;background:#E1F4FF;border-radius:6px;border-left:3px solid #0070F2}
+.em-msg-card .em-msg-text{font-size:14px;line-height:1.7;color:#222;white-space:pre-wrap;background:#f8f9fa;padding:14px 16px;border-radius:8px;border:1px solid #eee}
+.em-msg-copy{position:absolute;top:16px;right:16px;background:#f0f2f5;border:none;padding:5px 12px;border-radius:6px;font-size:11px;font-weight:600;cursor:pointer;color:var(--g1);transition:all .15s}
+.em-msg-copy:hover{background:#e2e6eb}
+.em-msg-copy.copied{background:#d4edda;color:#155724}
 /* About tooltip (on footer hover) */
-.about-tooltip{display:none;position:absolute;bottom:100%;left:50%;transform:translateX(-50%);background:#fff;border-radius:10px;box-shadow:0 8px 28px rgba(0,0,0,.15);padding:16px 20px;width:280px;margin-bottom:8px;border:1px solid #e1e2e6;animation:aboutTipIn .15s ease;z-index:100}
-.kf{position:relative}
-.kf:hover .about-tooltip{display:block}
+.about-tooltip{display:none;position:fixed;background:#fff;border-radius:10px;box-shadow:0 8px 28px rgba(0,0,0,.15);padding:16px 20px;width:280px;border:1px solid #e1e2e6;animation:aboutTipIn .15s ease;z-index:9999}
+.kf{position:relative;cursor:default}
+.about-tooltip.visible{display:block}
 @keyframes aboutTipIn{from{opacity:0;transform:translateX(-50%) translateY(4px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
 .about-table{width:100%;border-collapse:collapse}
 .about-table tr td{padding:4px 0;font-size:12px;vertical-align:top;text-align:left}
@@ -555,6 +579,7 @@ body{font-family:'72','Inter',-apple-system,sans-serif;background:var(--w);color
 
 <button class="tool-icon-btn live" onclick="openOnCall()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg><span class="tool-tip">On the Call</span></button>
 <button class="tool-icon-btn linkedin" onclick="openLinkedIn()"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg><span class="tool-tip">LinkedIn Outreach</span></button>
+<button class="tool-icon-btn email" onclick="openEmail()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg><span class="tool-tip">Email Outreach</span></button>
 <div class="sw"><input type="text" id="sI" oninput="doS(this.value)" onfocus="doS(this.value)" onblur="setTimeout(clS,200)"><div class="sr" id="sR"></div></div>
 </div></div>
 <div class="ln" id="lobN"></div>
@@ -584,12 +609,33 @@ body{font-family:'72','Inter',-apple-system,sans-serif;background:var(--w);color
 <div class="li-body" id="liBody"></div>
 </div>
 
+<div class="em-overlay" id="emOverlay">
+<div class="em-header"><h2 id="emTitle">Email Outreach</h2><button class="em-exit" onclick="closeEmail()">Close</button></div>
+<div class="em-body" id="emBody"></div>
+</div>
+
 <div class="prep-overlay" id="prepOverlay" onclick="if(event.target===this)closePrep()">
 <div class="prep-modal" id="prepModal"></div>
 </div>
 <div class="summ-overlay" id="summOverlay" onclick="if(event.target===this)closeSummary()">
 <div class="summ-modal" id="summModal"></div>
 </div>
+<div class="about-tooltip" id="aboutTip">
+<div style="display:grid;grid-template-columns:100px 1fr;gap:4px 8px;font-size:12px">
+<span style="font-weight:600;color:#555">Built by</span><span>Jan Esteve</span>
+<span style="font-weight:600;color:#555">Team</span><span>Data, Assets &amp; Campaigns @ MEE</span>
+<span style="font-weight:600;color:#555">Version</span><span>2</span>
+<span style="font-weight:600;color:#555">Released</span><span>May 2026</span>
+<span style="font-weight:600;color:#555">Region</span><span>MEE (Middle &amp; Eastern Europe)</span>
+</div>
+<div class="about-divider"></div>
+<div style="display:grid;grid-template-columns:100px 1fr;gap:4px 8px;font-size:12px">
+<span style="font-weight:600;color:#555">Kits loaded</span><span id="aboutKitCount">-</span>
+<span style="font-weight:600;color:#555">Languages</span><span>English, German</span>
+<span style="font-weight:600;color:#555">Data points</span><span id="aboutDataPoints">-</span>
+</div>
+</div>
+
 <div class="quiz-overlay" id="quizOverlay" onclick="if(event.target===this)closeQuiz()">
 <div class="quiz-modal" id="quizModal"></div>
 </div>
@@ -732,7 +778,7 @@ html+=sec('sx',LBL.dont[L],'X',k.dont[L].map(x=>`<li>${x}</li>`).join(''),'dont'
 html+=`<div class="sec" data-sec="inds"><div class="sh" onclick="togSec('inds')"><div class="ic" style="background:var(--g3);color:var(--g1)">&#9679;</div><h3>${LBL.industries[L]}</h3><div class="sh-tog${collapsed.inds?' collapsed':''}" id="tog-inds">&#9660;</div></div><div class="it${collapsed.inds?' hidden':''}" id="sb-inds">${k.inds.map(x=>`<span class="itg">${x}</span>`).join('')}</div></div>`;
 }
 
-html+=`</div><div class="kit-actions"><button class="kit-act" onclick="openPrep()"><span class="kit-act-icon">&#9745;</span><span class="kit-act-label">${L==='en'?'Meeting Prep':'Meeting-Vorbereitung'}</span></button><button class="kit-act" onclick="openSummary()"><span class="kit-act-icon">&#9998;</span><span class="kit-act-label">${L==='en'?'Post-Discovery':'Nach dem Discovery'}</span></button><button class="kit-act" onclick="openQuiz()"><span class="kit-act-icon">&#9889;</span><span class="kit-act-label">${L==='en'?'Self-Check Quiz':'Selbsttest'}</span></button></div><div class="kf" onmouseenter="showAbout()"><div class="about-tooltip" id="aboutTip"><div style="display:grid;grid-template-columns:100px 1fr;gap:4px 8px;font-size:12px"><span style="font-weight:600;color:#555">Built by</span><span>Jan Esteve</span><span style="font-weight:600;color:#555">Team</span><span>Data, Assets &amp; Campaigns @ MEE</span><span style="font-weight:600;color:#555">Version</span><span>2</span><span style="font-weight:600;color:#555">Released</span><span>May 2026</span><span style="font-weight:600;color:#555">Region</span><span>MEE (Middle &amp; Eastern Europe)</span></div><div class="about-divider"></div><div style="display:grid;grid-template-columns:100px 1fr;gap:4px 8px;font-size:12px"><span style="font-weight:600;color:#555">Kits loaded</span><span id="aboutKitCount">-</span><span style="font-weight:600;color:#555">Languages</span><span>English, German</span><span style="font-weight:600;color:#555">Data points</span><span id="aboutDataPoints">-</span></div></div>Discovery Prep Kit &mdash; SAP Data, Assets &amp; Campaigns @ MEE &mdash; Last updated: May, 2026</div></div>`;
+html+=`</div><div class="kit-actions"><button class="kit-act" onclick="openPrep()"><span class="kit-act-icon">&#9745;</span><span class="kit-act-label">${L==='en'?'Meeting Prep':'Meeting-Vorbereitung'}</span></button><button class="kit-act" onclick="openSummary()"><span class="kit-act-icon">&#9998;</span><span class="kit-act-label">${L==='en'?'Post-Discovery':'Nach dem Discovery'}</span></button><button class="kit-act" onclick="openQuiz()"><span class="kit-act-icon">&#9889;</span><span class="kit-act-label">${L==='en'?'Self-Check Quiz':'Selbsttest'}</span></button></div><div class="kf">Discovery Prep Kit &mdash; SAP Data, Assets &amp; Campaigns @ MEE &mdash; Last updated: May, 2026</div></div>`;
 document.getElementById('kV').innerHTML=html;
 document.getElementById('kV').scrollTop=0;
 if(typeof updateURL==='function')updateURL();
@@ -946,7 +992,7 @@ function renderAiResults(company,k,L){
   var isEasterEgg=easterEggs.indexOf(company.toLowerCase())>-1;
   // Action buttons
   h+='<div style="display:flex;justify-content:flex-end;gap:8px;margin-bottom:12px">';
-  if(!isEasterEgg){h+='<button onclick="startCallWithIntel()" style="padding:6px 14px;border-radius:6px;font-size:11px;font-weight:600;border:none;background:#E53935;cursor:pointer;font-family:inherit;color:#fff;transition:all .12s;display:flex;align-items:center;gap:5px"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>Start Call</button><button onclick="startLinkedInWithIntel()" style="padding:6px 14px;border-radius:6px;font-size:11px;font-weight:600;border:none;background:#0A66C2;cursor:pointer;font-family:inherit;color:#fff;transition:all .12s;display:flex;align-items:center;gap:5px"><svg width="12" height="12" viewBox="0 0 24 24" fill="#fff"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>LinkedIn Outreach</button>';}
+  if(!isEasterEgg){h+='<button onclick="startCallWithIntel()" style="padding:6px 14px;border-radius:6px;font-size:11px;font-weight:600;border:none;background:#E53935;cursor:pointer;font-family:inherit;color:#fff;transition:all .12s;display:flex;align-items:center;gap:5px"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>Start Call</button><button onclick="startLinkedInWithIntel()" style="padding:6px 14px;border-radius:6px;font-size:11px;font-weight:600;border:none;background:#0A66C2;cursor:pointer;font-family:inherit;color:#fff;transition:all .12s;display:flex;align-items:center;gap:5px"><svg width="12" height="12" viewBox="0 0 24 24" fill="#fff"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>LinkedIn Outreach</button><button onclick="startEmailWithIntel()" style="padding:6px 14px;border-radius:6px;font-size:11px;font-weight:600;border:none;background:#0070F2;cursor:pointer;font-family:inherit;color:#fff;transition:all .12s;display:flex;align-items:center;gap:5px"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>Email Outreach</button>';}
   h+='<button onclick="copyAiIntel()" id="aiCopyBtn" style="padding:6px 14px;border-radius:6px;font-size:11px;font-weight:600;border:1.5px solid var(--g3);background:#fff;cursor:pointer;font-family:inherit;color:var(--g1);transition:all .12s">Copy Intel</button></div>';
   // Disclaimer
   var discText=(company.toLowerCase()==='jan esteve'||company.toLowerCase()==='jan')?'This analysis is 100% accurate. AI does not make mistakes when it comes to Jan.':(company.toLowerCase()==='sap'||company.toLowerCase()==='sap se')?'This analysis is 100% accurate. AI does not make mistakes when it comes to SAP.':(['joule','chatgpt','openai','open ai','skynet','cyberdyne','cyberdyne systems','2027','walldorf','42'].indexOf(company.toLowerCase())>-1)?'This is not real intel. You know that, right? Right?':'This analysis is AI-generated and not verified against SAP\'s customer database. Use as directional guidance — AI can make mistakes.';
@@ -1726,8 +1772,21 @@ function showAbout(){
   Object.keys(KITS).forEach(function(lob){totalKits+=KITS[lob].length;KITS[lob].forEach(function(k){totalData+=(k.pain.en||[]).length+(k.questions.en||[]).length+(k.diff.en||[]).length+(k.obj?k.obj.en.length:0)+(k.refs?k.refs.en.length:0)+(k.roi?k.roi.en.length:0);});});
   var el1=document.getElementById('aboutKitCount');if(el1)el1.textContent=totalKits;
   var el2=document.getElementById('aboutDataPoints');if(el2)el2.textContent=totalData+'+';
+  var tip=document.getElementById('aboutTip');
+  var footer=document.querySelector('.kf');
+  if(tip&&footer){
+    tip.style.visibility='hidden';
+    tip.classList.add('visible');
+    var r=footer.getBoundingClientRect();
+    var th=tip.offsetHeight;
+    tip.style.left=Math.max(8,Math.min(window.innerWidth-288,r.left+r.width/2-140))+'px';
+    tip.style.top=(r.top-th-8)+'px';
+    tip.style.visibility='';
+  }
 }
-function hideAbout(){}
+function hideAbout(){
+  var tip=document.getElementById('aboutTip');if(tip)tip.classList.remove('visible');
+}
 function openLinkedIn(){
   var k=KITS[LOBS[curLob]][curKit],L=lang;
   document.getElementById('liTitle').textContent='LinkedIn Outreach \u2014 '+k.name;
@@ -1757,8 +1816,8 @@ function openLinkedIn(){
   h+=buildLiMsgCard('3. Follow-up / Breakup','If silence. Leave a breadcrumb and go.',msg3,2);
 
   document.getElementById('liBody').innerHTML=h;
-  document.getElementById('liBody').scrollTop=0;
   document.getElementById('liOverlay').classList.add('show');
+  requestAnimationFrame(function(){document.getElementById('liBody').scrollTop=0;});
   document.querySelector('.contact-chip').style.display='none';
   document.getElementById('aiFab').style.display='none';
   document.getElementById('kitProgress').classList.add('hidden');
@@ -1836,14 +1895,162 @@ function startLinkedInWithIntel(){
   }
 
   document.getElementById('liBody').innerHTML=h;
-  document.getElementById('liBody').scrollTop=0;
   document.getElementById('liOverlay').classList.add('show');
+  requestAnimationFrame(function(){document.getElementById('liBody').scrollTop=0;});
   document.querySelector('.contact-chip').style.display='none';
   document.getElementById('aiFab').style.display='none';
   document.getElementById('kitProgress').classList.add('hidden');
 }
 function closeLinkedIn(){
   document.getElementById('liOverlay').classList.remove('show');
+  document.querySelector('.contact-chip').style.display='';
+  document.getElementById('aiFab').style.display='';
+  document.getElementById('kitProgress').classList.remove('hidden');
+  if(_aiCallMode&&_aiResult){
+    _aiCallMode=false;
+    document.getElementById('aiOverlay').classList.add('show');
+  }
+}
+
+// Email outreach helper
+function buildEmMsgCard(title,context,subject,body,idx){
+  return '<div class="em-msg-card"><button class="em-msg-copy" onclick="copyEmMsg('+idx+')">Copy</button><h3>'+title+'</h3><div class="em-msg-context">'+context+'</div><div class="em-msg-subj">Subject: '+subject+'</div><div class="em-msg-text" id="emMsg'+idx+'">'+body.replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>')+'</div></div>';
+}
+function copyEmMsg(idx){
+  var el=document.getElementById('emMsg'+idx);if(!el)return;
+  var text=el.innerText||el.textContent;
+  navigator.clipboard.writeText(text);
+  var btns=document.querySelectorAll('.em-msg-copy');
+  if(btns[idx]){btns[idx].textContent='Copied';btns[idx].classList.add('copied');setTimeout(function(){btns[idx].textContent='Copy';btns[idx].classList.remove('copied');},1500);}
+}
+function switchEmPersonaTab(idx){
+  var tabs=document.querySelectorAll('.em-persona-tab');
+  var panels=document.querySelectorAll('.em-persona-panel');
+  tabs.forEach(function(t,i){t.classList.toggle('active',i===idx);});
+  panels.forEach(function(p,i){p.classList.toggle('active',i===idx);});
+}
+function openEmail(){
+  var k=KITS[LOBS[curLob]][curKit],L=lang;
+  document.getElementById('emTitle').textContent='Email Outreach \u2014 '+k.name;
+  var h='';
+  h+='<div style="margin-bottom:20px;padding:16px 20px;background:#E1F4FF;border-radius:10px;border-left:4px solid #0070F2"><p style="font-size:13px;color:#333;margin:0"><strong>Generic email templates</strong> for '+k.name+'. Replace [Name], [Company], and [Your Name] with real details. For personalized emails, use <strong>Customer Intel</strong> first, then click <strong>Email Outreach</strong> from the results.</p></div>';
+  var elevator=k.elev[L].split('.').slice(0,2).join('.')+'.';
+  var pain1=k.pain[L][0]||'';
+  var pain2=k.pain[L][1]||'';
+  var diff1=k.diff[L][0]||'';
+  var roi1=(k.roi&&k.roi[L]&&k.roi[L][0])?k.roi[L][0]:'';
+  var ref1=(k.refs&&k.refs[L]&&k.refs[L][0])?k.refs[L][0]:null;
+  var ind1=(k.inds&&k.inds[0])?k.inds[0]:'enterprise';
+  var painShort=pain1.split(' - ')[0]||pain1.substring(0,60);
+  // Email 1: Cold intro
+  var subj1=painShort+' at [Company]';
+  var body1='[Name],\n\nI work with '+ind1+' companies dealing with '+painShort.toLowerCase()+'.\n\nOne thing that keeps coming up: '+diff1.charAt(0).toLowerCase()+diff1.slice(1)+'\n\n'+(ref1?'A '+ref1.industry+' company in '+ref1.country+' saw this result: '+ref1.outcome+'\n\n':'')+'Would it make sense to spend 15 minutes on whether this applies to [Company]?\n\n[Your Name]';
+  // Email 2: Follow-up
+  var subj2='Re: '+painShort+' at [Company]';
+  var body2='[Name],\n\nSent you a note last week about '+(painShort.toLowerCase())+'. Know the inbox is brutal so keeping this short.\n\n'+(roi1?'The number that got my last conversation started: '+roi1+'.\n\n':'')+'If the timing is wrong, just say so. No follow-up from me after this.\n\n[Your Name]';
+  // Email 3: Meeting request
+  var subj3='15 min — '+k.name+' for [Company]';
+  var body3='[Name],\n\nI have something specific for [Company] around '+k.name.toLowerCase()+'.'+(pain2?'\n\nCompanies in your space keep running into: '+pain2.split(' - ')[0].toLowerCase()+'. We have a concrete approach that addresses it.':'')+(diff1?'\n\nShort version: '+diff1+'':'')+(ref1?'\n\nAlready worked in '+ref1.country+' ('+ref1.industry+').':'')+'\n\n15 minutes. If it does not apply, I will tell you and we both move on.\n\nWhat does your Thursday or Friday look like?\n\n[Your Name]';
+  // Email 4: Value drop
+  var subj4=k.name+' — one thing worth knowing';
+  var body4='[Name],\n\nNot asking for a meeting.'+(roi1?'\n\nJust this: '+roi1+'.':'')+(diff1?'\n\nThe mechanism behind it: '+diff1.charAt(0).toLowerCase()+diff1.slice(1):'')+(ref1?'\n\n'+ref1.industry+' company, '+ref1.country+': '+ref1.outcome:'')+'\n\nIf [Company] ever looks at this seriously, I can map what it would mean for you specifically. Takes 5 minutes of my time, not yours.\n\n[Your Name]';
+
+  h+=buildEmMsgCard('1. Cold Introduction','First touch. Short, relevant, one clear ask.',subj1,body1,0);
+  h+=buildEmMsgCard('2. Follow-up','3-5 days after first email. Even shorter. One number, one exit.',subj2,body2,1);
+  h+=buildEmMsgCard('3. Meeting Request','Direct ask when timing feels right.',subj3,body3,2);
+  h+=buildEmMsgCard('4. Value Drop (No Ask)','Give something useful with zero obligation.',subj4,body4,3);
+
+  document.getElementById('emBody').innerHTML=h;
+  document.getElementById('emOverlay').classList.add('show');
+  requestAnimationFrame(function(){document.getElementById('emBody').scrollTop=0;});
+  document.querySelector('.contact-chip').style.display='none';
+  document.getElementById('aiFab').style.display='none';
+  document.getElementById('kitProgress').classList.add('hidden');
+}
+function startEmailWithIntel(){
+  var r=_aiResult;if(!r)return;
+  _aiCallMode=true;
+  var company=document.getElementById('aiCompany').value.trim();
+  var k=KITS[LOBS[curLob]][curKit],L=lang;
+  var cp=r.callPrep||{};
+  document.getElementById('aiOverlay').classList.remove('show');
+  document.getElementById('emTitle').innerHTML='Email Outreach \u2014 '+k.name+' \u00d7 <span style="color:#0070F2;font-weight:700">'+company+'</span>';
+  var h='';
+
+  var personas=[];
+  if(r.personaFocus&&r.personaFocus.length&&k.persona&&k.persona[L]){
+    r.personaFocus.forEach(function(idx){if(k.persona[L][idx])personas.push(k.persona[L][idx]);});
+  }
+
+  var snapshot=r.companySnapshot||{};
+  var industry=snapshot.industry||'your industry';
+  var focus=snapshot.strategicFocus||'';
+  var diff1=(cp.differentiators&&cp.differentiators[0])?cp.differentiators[0]:(k.diff[L][0]||'');
+  var ref1=(k.refs&&k.refs[L]&&k.refs[L][0])?k.refs[L][0]:null;
+  var roi1='';
+  if(r.roiHighlight&&r.roiHighlight.length&&k.roi&&k.roi[L]){roi1=k.roi[L][r.roiHighlight[0]]||'';}
+  var painContext='';
+  if(r.topPains&&r.topPains.length&&k.pain&&k.pain[L]){painContext=k.pain[L][r.topPains[0]]||'';}
+  var painShort=painContext?painContext.split(' - ')[0]:k.pain[L][0].split(' - ')[0];
+  var pain2='';
+  if(r.topPains&&r.topPains.length>1&&k.pain&&k.pain[L]){pain2=k.pain[L][r.topPains[1]]||'';}
+
+  function buildPersonaEmails(personaRole,personaMsg,msgIdx){
+    var prio1=personaMsg?personaMsg.split(',')[0].trim():'';
+    var angle=prio1||painShort;
+    var base=msgIdx*4;
+    // Cold intro for this persona
+    var s1=angle+' — '+company;
+    var b1='[Name],\n\nI work with '+personaRole+'-level leaders in '+industry+' who are dealing with '+angle.toLowerCase()+'.'+(focus?'\n\nSaw that '+company+' is focused on '+focus.split('.')[0].toLowerCase()+'. That usually means this lands:':'')+'\n\n'+diff1+'\n\n'+(ref1?ref1.industry+' ('+ref1.country+'): '+ref1.outcome+'\n\n':'')+'Worth 15 minutes to see if it maps to '+company+'?\n\n[Your Name]';
+    // Follow-up for this persona
+    var s2='Re: '+angle+' — '+company;
+    var b2='[Name],\n\nFollowing up on my last note. As '+personaRole+' you probably get 50 of these a week, so I will keep it to one line:\n\n'+(roi1?roi1+'.':'This is saving '+industry+' companies real money and time.')+'\n\nIf the timing is off, no worries. Just let me know either way and I will stop.\n\n[Your Name]';
+    // Meeting request for this persona
+    var s3='Quick call — '+k.name+' for '+company;
+    var b3='[Name],\n\nI have a specific view on how '+k.name.toLowerCase()+' applies to '+company+' given '+(focus?'your direction on '+focus.split('.')[0].toLowerCase():'what I see in '+industry)+'.'+(pain2?'\n\nThe trigger I keep hearing from '+personaRole+' peers: '+pain2.split(' - ')[0].toLowerCase()+'.':'')+(diff1?'\n\nWhat we bring: '+diff1:'')+'\n\n15 minutes. If it is not relevant to your world, I will say so and we move on.\n\nWhat works this week or next?\n\n[Your Name]';
+    // Value drop for this persona
+    var s4='For your files — '+angle;
+    var b4='[Name],\n\nNo meeting ask.'+(roi1?'\n\nOne data point for a '+personaRole+': '+roi1+'.':'')+(diff1?'\n\nBehind it: '+diff1.charAt(0).toLowerCase()+diff1.slice(1):'')+(ref1?'\n\nWorked in practice: '+ref1.industry+', '+ref1.country+' — '+ref1.outcome:'')+'\n\nIf '+company+' looks at this down the line, I can run the specifics for you. No prep needed on your end.\n\n[Your Name]';
+    return buildEmMsgCard('1. Cold Introduction','First email to '+personaRole+'. Relevant to their world.',s1,b1,base)+buildEmMsgCard('2. Follow-up','After silence. One line of value.',s2,b2,base+1)+buildEmMsgCard('3. Meeting Request','Direct ask, framed for '+personaRole+'.',s3,b3,base+2)+buildEmMsgCard('4. Value Drop (No Ask)','Give something useful, walk away.',s4,b4,base+3);
+  }
+
+  if(personas.length>1){
+    h+='<div class="em-persona-tabs" id="emPersonaTabs">';
+    personas.forEach(function(p,idx){
+      h+='<button class="em-persona-tab'+(idx===0?' active':'')+'" onclick="switchEmPersonaTab('+idx+')">'+p.role+'</button>';
+    });
+    h+='</div>';
+    personas.forEach(function(p,idx){
+      h+='<div class="em-persona-panel'+(idx===0?' active':'')+'" id="emPersonaPanel'+idx+'">';
+      h+=buildPersonaEmails(p.role,p.msg,idx);
+      h+='</div>';
+    });
+  } else {
+    var personaRole=personas.length===1?personas[0].role:'decision-maker';
+    var angle=painShort;
+    var s1=angle+' — '+company;
+    var b1='[Name],\n\nI work with '+industry+' companies dealing with '+angle.toLowerCase()+'.'+(focus?'\n\n'+company+' and '+focus.split('.')[0].toLowerCase()+' — that usually means this is relevant:':'')+'\n\n'+diff1+'\n\n'+(ref1?ref1.industry+' ('+ref1.country+'): '+ref1.outcome+'\n\n':'')+'Worth a 15-minute conversation?\n\n[Your Name]';
+    var s2='Re: '+angle+' — '+company;
+    var b2='[Name],\n\nSent a note last week. Keeping this to one line:\n\n'+(roi1?roi1+'.':'Companies in '+industry+' are getting measurable results here.')+'\n\nBad timing? Just say so and I will stop. No hard feelings.\n\n[Your Name]';
+    var s3='15 min — '+k.name+' for '+company;
+    var b3='[Name],\n\nI have something concrete for '+company+' on '+k.name.toLowerCase()+'.'+(pain2?'\n\nThe issue I keep hearing: '+pain2.split(' - ')[0].toLowerCase()+'.':'')+(diff1?'\n\nWhat works: '+diff1:'')+'\n\n15 minutes. If it does not fit, I will tell you straight.\n\nWhat does your calendar look like this week?\n\n[Your Name]';
+    var s4=k.name+' — one data point for '+company;
+    var b4='[Name],\n\nNo ask here.'+(roi1?'\n\nJust this number: '+roi1+'.':'')+(diff1?'\n\nHow: '+diff1.charAt(0).toLowerCase()+diff1.slice(1):'')+(ref1?'\n\nReal example: '+ref1.industry+', '+ref1.country+' — '+ref1.outcome:'')+'\n\nIf '+company+' looks at this later, I can run the specifics. Zero prep on your side.\n\n[Your Name]';
+    h+=buildEmMsgCard('1. Cold Introduction','First touch to '+personaRole+' at '+company+'.',s1,b1,0);
+    h+=buildEmMsgCard('2. Follow-up','After silence. Short, one exit ramp.',s2,b2,1);
+    h+=buildEmMsgCard('3. Meeting Request','Direct ask. Specific to '+company+'.',s3,b3,2);
+    h+=buildEmMsgCard('4. Value Drop (No Ask)','Give value, no strings.',s4,b4,3);
+  }
+
+  document.getElementById('emBody').innerHTML=h;
+  document.getElementById('emOverlay').classList.add('show');
+  requestAnimationFrame(function(){document.getElementById('emBody').scrollTop=0;});
+  document.querySelector('.contact-chip').style.display='none';
+  document.getElementById('aiFab').style.display='none';
+  document.getElementById('kitProgress').classList.add('hidden');
+}
+function closeEmail(){
+  document.getElementById('emOverlay').classList.remove('show');
   document.querySelector('.contact-chip').style.display='';
   document.getElementById('aiFab').style.display='';
   document.getElementById('kitProgress').classList.remove('hidden');
@@ -1999,6 +2206,9 @@ function closeOnCall(){
 loadFromURL();
 document.getElementById('sI').placeholder=LBL.search[lang];
 initNav();render();
+// About tooltip: event delegation on .kf footer
+document.getElementById('kV').addEventListener('mouseenter',function(e){var f=e.target.closest('.kf');if(f)showAbout();},true);
+document.getElementById('kV').addEventListener('mouseleave',function(e){var f=e.target.closest('.kf');if(f)hideAbout();},true);
 // Splash screen: show for 1.2s then fade out
 setTimeout(function(){var s=document.getElementById('splash');s.classList.add('out');setTimeout(function(){s.style.display='none';},500);},1200);
 </script></body></html>
