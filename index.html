@@ -1914,14 +1914,18 @@ function closeLinkedIn(){
 
 // Email outreach helper
 function buildEmMsgCard(title,context,subject,body,idx){
-  return '<div class="em-msg-card"><button class="em-msg-copy" onclick="copyEmMsg('+idx+')">Copy</button><h3>'+title+'</h3><div class="em-msg-context">'+context+'</div><div class="em-msg-subj">Subject: '+subject+'</div><div class="em-msg-text" id="emMsg'+idx+'">'+body.replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>')+'</div></div>';
+  var de=lang==='de';
+  var copyLbl=de?'Kopieren':'Copy';
+  var subjLbl=de?'Betreff: ':'Subject: ';
+  return '<div class="em-msg-card"><button class="em-msg-copy" onclick="copyEmMsg('+idx+')">'+copyLbl+'</button><h3>'+title+'</h3><div class="em-msg-context">'+context+'</div><div class="em-msg-subj">'+subjLbl+subject+'</div><div class="em-msg-text" id="emMsg'+idx+'">'+body.replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>')+'</div></div>';
 }
 function copyEmMsg(idx){
   var el=document.getElementById('emMsg'+idx);if(!el)return;
   var text=el.innerText||el.textContent;
   navigator.clipboard.writeText(text);
+  var de=lang==='de';
   var btns=document.querySelectorAll('.em-msg-copy');
-  if(btns[idx]){btns[idx].textContent='Copied';btns[idx].classList.add('copied');setTimeout(function(){btns[idx].textContent='Copy';btns[idx].classList.remove('copied');},1500);}
+  if(btns[idx]){btns[idx].textContent=de?'Kopiert':'Copied';btns[idx].classList.add('copied');setTimeout(function(){btns[idx].textContent=de?'Kopieren':'Copy';btns[idx].classList.remove('copied');},1500);}
 }
 function switchEmPersonaTab(idx){
   var tabs=document.querySelectorAll('.em-persona-tab');
@@ -1933,8 +1937,11 @@ function openEmail(){
   var k=KITS[LOBS[curLob]][curKit],L=lang;
   document.getElementById('emTitle').textContent='Email Outreach \u2014 '+k.name;
   var h='';
-  h+='<div style="margin-bottom:20px;padding:16px 20px;background:#E1F4FF;border-radius:10px;border-left:4px solid #0070F2"><p style="font-size:13px;color:#333;margin:0"><strong>Generic email templates</strong> for '+k.name+'. Replace [Name], [Company], and [Your Name] with real details. For personalized emails, use <strong>Customer Intel</strong> first, then click <strong>Email Outreach</strong> from the results.</p></div>';
-  var elevator=k.elev[L].split('.').slice(0,2).join('.')+'.';
+  if(L==='de'){
+    h+='<div style="margin-bottom:20px;padding:16px 20px;background:#E1F4FF;border-radius:10px;border-left:4px solid #0070F2"><p style="font-size:13px;color:#333;margin:0"><strong>Generische E-Mail-Vorlagen</strong> f\u00fcr '+k.name+'. Ersetzen Sie [Name], [Firma] und [Ihr Name] mit echten Angaben. F\u00fcr personalisierte E-Mails nutzen Sie zuerst <strong>Customer Intel</strong>, dann klicken Sie auf <strong>Email Outreach</strong> in den Ergebnissen.</p></div>';
+  } else {
+    h+='<div style="margin-bottom:20px;padding:16px 20px;background:#E1F4FF;border-radius:10px;border-left:4px solid #0070F2"><p style="font-size:13px;color:#333;margin:0"><strong>Generic email templates</strong> for '+k.name+'. Replace [Name], [Company], and [Your Name] with real details. For personalized emails, use <strong>Customer Intel</strong> first, then click <strong>Email Outreach</strong> from the results.</p></div>';
+  }
   var pain1=k.pain[L][0]||'';
   var pain2=k.pain[L][1]||'';
   var diff1=k.diff[L][0]||'';
@@ -1942,23 +1949,39 @@ function openEmail(){
   var ref1=(k.refs&&k.refs[L]&&k.refs[L][0])?k.refs[L][0]:null;
   var ind1=(k.inds&&k.inds[0])?k.inds[0]:'enterprise';
   var painShort=pain1.split(' - ')[0]||pain1.substring(0,60);
-  // Email 1: Cold intro
-  var subj1=painShort+' at [Company]';
-  var body1='[Name],\n\nI work with '+ind1+' companies dealing with '+painShort.toLowerCase()+'.\n\nOne thing that keeps coming up: '+diff1.charAt(0).toLowerCase()+diff1.slice(1)+'\n\n'+(ref1?'A '+ref1.industry+' company in '+ref1.country+' saw this result: '+ref1.outcome+'\n\n':'')+'Would it make sense to spend 15 minutes on whether this applies to [Company]?\n\n[Your Name]';
-  // Email 2: Follow-up
-  var subj2='Re: '+painShort+' at [Company]';
-  var body2='[Name],\n\nSent you a note last week about '+(painShort.toLowerCase())+'. Know the inbox is brutal so keeping this short.\n\n'+(roi1?'The number that got my last conversation started: '+roi1+'.\n\n':'')+'If the timing is wrong, just say so. No follow-up from me after this.\n\n[Your Name]';
-  // Email 3: Meeting request
-  var subj3='15 min — '+k.name+' for [Company]';
-  var body3='[Name],\n\nI have something specific for [Company] around '+k.name.toLowerCase()+'.'+(pain2?'\n\nCompanies in your space keep running into: '+pain2.split(' - ')[0].toLowerCase()+'. We have a concrete approach that addresses it.':'')+(diff1?'\n\nShort version: '+diff1+'':'')+(ref1?'\n\nAlready worked in '+ref1.country+' ('+ref1.industry+').':'')+'\n\n15 minutes. If it does not apply, I will tell you and we both move on.\n\nWhat does your Thursday or Friday look like?\n\n[Your Name]';
-  // Email 4: Value drop
-  var subj4=k.name+' — one thing worth knowing';
-  var body4='[Name],\n\nNot asking for a meeting.'+(roi1?'\n\nJust this: '+roi1+'.':'')+(diff1?'\n\nThe mechanism behind it: '+diff1.charAt(0).toLowerCase()+diff1.slice(1):'')+(ref1?'\n\n'+ref1.industry+' company, '+ref1.country+': '+ref1.outcome:'')+'\n\nIf [Company] ever looks at this seriously, I can map what it would mean for you specifically. Takes 5 minutes of my time, not yours.\n\n[Your Name]';
-
-  h+=buildEmMsgCard('1. Cold Introduction','First touch. Short, relevant, one clear ask.',subj1,body1,0);
-  h+=buildEmMsgCard('2. Follow-up','3-5 days after first email. Even shorter. One number, one exit.',subj2,body2,1);
-  h+=buildEmMsgCard('3. Meeting Request','Direct ask when timing feels right.',subj3,body3,2);
-  h+=buildEmMsgCard('4. Value Drop (No Ask)','Give something useful with zero obligation.',subj4,body4,3);
+  var subj1,body1,subj2,body2,subj3,body3,subj4,body4;
+  var t1,c1,t2,c2,t3,c3,t4,c4;
+  if(L==='de'){
+    subj1=painShort+' bei [Firma]';
+    body1='[Name],\n\nich arbeite mit '+ind1+'-Unternehmen die mit '+painShort+' zu tun haben.\n\nWas dabei immer wieder aufkommt: '+diff1.charAt(0).toLowerCase()+diff1.slice(1)+'\n\n'+(ref1?'Ein '+ref1.industry+'-Unternehmen in '+ref1.country+' hat folgendes Ergebnis erzielt: '+ref1.outcome+'\n\n':'')+'Macht es Sinn, 15 Minuten dar\u00fcber zu sprechen ob das f\u00fcr [Firma] relevant ist?\n\n[Ihr Name]';
+    subj2='Re: '+painShort+' bei [Firma]';
+    body2='[Name],\n\nhabe Ihnen letzte Woche geschrieben zum Thema '+painShort+'. Postfach ist voll, daher kurz:\n\n'+(roi1?'Die Zahl die mein letztes Gespr\u00e4ch er\u00f6ffnet hat: '+roi1+'.\n\n':'')+'Falls das Timing nicht passt, sagen Sie einfach Bescheid. Keine weitere Nachricht von mir.\n\n[Ihr Name]';
+    subj3='15 Min \u2014 '+k.name+' f\u00fcr [Firma]';
+    body3='[Name],\n\nich habe etwas Konkretes f\u00fcr [Firma] zum Thema '+k.name+'.'+(pain2?'\n\nWas mir bei Unternehmen in Ihrem Bereich immer wieder begegnet: '+pain2.split(' - ')[0]+'. Wir haben einen Ansatz der das adressiert.':'')+(diff1?'\n\nKurzversion: '+diff1:'')+(ref1?'\n\nHat bereits funktioniert in '+ref1.country+' ('+ref1.industry+').':'')+'\n\n15 Minuten. Falls es nicht passt, sage ich Ihnen das direkt.\n\nWie sieht Ihr Donnerstag oder Freitag aus?\n\n[Ihr Name]';
+    subj4=k.name+' \u2014 eine Zahl die sich lohnt';
+    body4='[Name],\n\nkein Meeting-Wunsch.'+(roi1?'\n\nNur das: '+roi1+'.':'')+(diff1?'\n\nDer Mechanismus dahinter: '+diff1.charAt(0).toLowerCase()+diff1.slice(1):'')+(ref1?'\n\n'+ref1.industry+', '+ref1.country+': '+ref1.outcome:'')+'\n\nFalls [Firma] das Thema irgendwann ernsthaft angeht, kann ich in 5 Minuten durchspielen was das konkret bedeuten w\u00fcrde.\n\n[Ihr Name]';
+    t1='1. Erstkontakt';c1='Erster Touchpoint. Kurz, relevant, eine klare Frage.';
+    t2='2. Follow-up';c2='3-5 Tage nach erster Mail. Noch k\u00fcrzer. Eine Zahl, ein Ausgang.';
+    t3='3. Terminanfrage';c3='Direkter Ask wenn Timing stimmt.';
+    t4='4. Value Drop (Ohne Ask)';c4='Etwas N\u00fctzliches ohne Verpflichtung.';
+  } else {
+    subj1=painShort+' at [Company]';
+    body1='[Name],\n\nI work with '+ind1+' companies dealing with '+painShort.toLowerCase()+'.\n\nOne thing that keeps coming up: '+diff1.charAt(0).toLowerCase()+diff1.slice(1)+'\n\n'+(ref1?'A '+ref1.industry+' company in '+ref1.country+' saw this result: '+ref1.outcome+'\n\n':'')+'Would it make sense to spend 15 minutes on whether this applies to [Company]?\n\n[Your Name]';
+    subj2='Re: '+painShort+' at [Company]';
+    body2='[Name],\n\nSent you a note last week about '+(painShort.toLowerCase())+'. Know the inbox is brutal so keeping this short.\n\n'+(roi1?'The number that got my last conversation started: '+roi1+'.\n\n':'')+'If the timing is wrong, just say so. No follow-up from me after this.\n\n[Your Name]';
+    subj3='15 min \u2014 '+k.name+' for [Company]';
+    body3='[Name],\n\nI have something specific for [Company] around '+k.name.toLowerCase()+'.'+(pain2?'\n\nCompanies in your space keep running into: '+pain2.split(' - ')[0].toLowerCase()+'. We have a concrete approach that addresses it.':'')+(diff1?'\n\nShort version: '+diff1:'')+(ref1?'\n\nAlready worked in '+ref1.country+' ('+ref1.industry+').':'')+'\n\n15 minutes. If it does not apply, I will tell you and we both move on.\n\nWhat does your Thursday or Friday look like?\n\n[Your Name]';
+    subj4=k.name+' \u2014 one thing worth knowing';
+    body4='[Name],\n\nNot asking for a meeting.'+(roi1?'\n\nJust this: '+roi1+'.':'')+(diff1?'\n\nThe mechanism behind it: '+diff1.charAt(0).toLowerCase()+diff1.slice(1):'')+(ref1?'\n\n'+ref1.industry+' company, '+ref1.country+': '+ref1.outcome:'')+'\n\nIf [Company] ever looks at this seriously, I can map what it would mean for you specifically. Takes 5 minutes of my time, not yours.\n\n[Your Name]';
+    t1='1. Cold Introduction';c1='First touch. Short, relevant, one clear ask.';
+    t2='2. Follow-up';c2='3-5 days after first email. Even shorter. One number, one exit.';
+    t3='3. Meeting Request';c3='Direct ask when timing feels right.';
+    t4='4. Value Drop (No Ask)';c4='Give something useful with zero obligation.';
+  }
+  h+=buildEmMsgCard(t1,c1,subj1,body1,0);
+  h+=buildEmMsgCard(t2,c2,subj2,body2,1);
+  h+=buildEmMsgCard(t3,c3,subj3,body3,2);
+  h+=buildEmMsgCard(t4,c4,subj4,body4,3);
 
   document.getElementById('emBody').innerHTML=h;
   document.getElementById('emOverlay').classList.add('show');
@@ -1983,7 +2006,7 @@ function startEmailWithIntel(){
   }
 
   var snapshot=r.companySnapshot||{};
-  var industry=snapshot.industry||'your industry';
+  var industry=snapshot.industry||(L==='de'?'Ihre Branche':'your industry');
   var focus=snapshot.strategicFocus||'';
   var diff1=(cp.differentiators&&cp.differentiators[0])?cp.differentiators[0]:(k.diff[L][0]||'');
   var ref1=(k.refs&&k.refs[L]&&k.refs[L][0])?k.refs[L][0]:null;
@@ -1999,19 +2022,35 @@ function startEmailWithIntel(){
     var prio1=personaMsg?personaMsg.split(',')[0].trim():'';
     var angle=prio1||painShort;
     var base=msgIdx*4;
-    // Cold intro for this persona
-    var s1=angle+' — '+company;
-    var b1='[Name],\n\nI work with '+personaRole+'-level leaders in '+industry+' who are dealing with '+angle.toLowerCase()+'.'+(focus?'\n\nSaw that '+company+' is focused on '+focus.split('.')[0].toLowerCase()+'. That usually means this lands:':'')+'\n\n'+diff1+'\n\n'+(ref1?ref1.industry+' ('+ref1.country+'): '+ref1.outcome+'\n\n':'')+'Worth 15 minutes to see if it maps to '+company+'?\n\n[Your Name]';
-    // Follow-up for this persona
-    var s2='Re: '+angle+' — '+company;
-    var b2='[Name],\n\nFollowing up on my last note. As '+personaRole+' you probably get 50 of these a week, so I will keep it to one line:\n\n'+(roi1?roi1+'.':'This is saving '+industry+' companies real money and time.')+'\n\nIf the timing is off, no worries. Just let me know either way and I will stop.\n\n[Your Name]';
-    // Meeting request for this persona
-    var s3='Quick call — '+k.name+' for '+company;
-    var b3='[Name],\n\nI have a specific view on how '+k.name.toLowerCase()+' applies to '+company+' given '+(focus?'your direction on '+focus.split('.')[0].toLowerCase():'what I see in '+industry)+'.'+(pain2?'\n\nThe trigger I keep hearing from '+personaRole+' peers: '+pain2.split(' - ')[0].toLowerCase()+'.':'')+(diff1?'\n\nWhat we bring: '+diff1:'')+'\n\n15 minutes. If it is not relevant to your world, I will say so and we move on.\n\nWhat works this week or next?\n\n[Your Name]';
-    // Value drop for this persona
-    var s4='For your files — '+angle;
-    var b4='[Name],\n\nNo meeting ask.'+(roi1?'\n\nOne data point for a '+personaRole+': '+roi1+'.':'')+(diff1?'\n\nBehind it: '+diff1.charAt(0).toLowerCase()+diff1.slice(1):'')+(ref1?'\n\nWorked in practice: '+ref1.industry+', '+ref1.country+' — '+ref1.outcome:'')+'\n\nIf '+company+' looks at this down the line, I can run the specifics for you. No prep needed on your end.\n\n[Your Name]';
-    return buildEmMsgCard('1. Cold Introduction','First email to '+personaRole+'. Relevant to their world.',s1,b1,base)+buildEmMsgCard('2. Follow-up','After silence. One line of value.',s2,b2,base+1)+buildEmMsgCard('3. Meeting Request','Direct ask, framed for '+personaRole+'.',s3,b3,base+2)+buildEmMsgCard('4. Value Drop (No Ask)','Give something useful, walk away.',s4,b4,base+3);
+    var s1,b1,s2,b2,s3,b3,s4,b4,t1,c1,t2,c2,t3,c3,t4,c4;
+    if(L==='de'){
+      s1=angle+' \u2014 '+company;
+      b1='[Name],\n\nich arbeite mit '+personaRole+'-Entscheidern in '+industry+' die sich mit '+angle+' befassen.'+(focus?'\n\nHabe gesehen dass '+company+' auf '+focus.split('.')[0]+' setzt. Das bedeutet meist dass folgendes relevant ist:':'')+'\n\n'+diff1+'\n\n'+(ref1?ref1.industry+' ('+ref1.country+'): '+ref1.outcome+'\n\n':'')+'Lohnen sich 15 Minuten um zu pr\u00fcfen ob das f\u00fcr '+company+' passt?\n\n[Ihr Name]';
+      s2='Re: '+angle+' \u2014 '+company;
+      b2='[Name],\n\nkurzes Follow-up zu meiner letzten Nachricht. Als '+personaRole+' bekommen Sie vermutlich 50 davon pro Woche, daher nur eine Zeile:\n\n'+(roi1?roi1+'.':'Das spart '+industry+'-Unternehmen messbar Zeit und Geld.')+'\n\nFalls das Timing nicht passt, kein Problem. Kurze R\u00fcckmeldung reicht.\n\n[Ihr Name]';
+      s3='Kurzer Austausch \u2014 '+k.name+' f\u00fcr '+company;
+      b3='[Name],\n\nich habe eine konkrete Sicht darauf wie '+k.name+' bei '+company+' wirken kann, '+(focus?'angesichts Ihrer Richtung bei '+focus.split('.')[0]:'basierend auf dem was ich in '+industry+' sehe')+'.'+(pain2?'\n\nDer Trigger den ich von '+personaRole+'-Kollegen h\u00f6re: '+pain2.split(' - ')[0]+'.':'')+(diff1?'\n\nWas wir mitbringen: '+diff1:'')+'\n\n15 Minuten. Falls es nicht relevant ist f\u00fcr Ihre Welt, sage ich das direkt.\n\nWas passt diese oder n\u00e4chste Woche?\n\n[Ihr Name]';
+      s4='F\u00fcr Ihre Unterlagen \u2014 '+angle;
+      b4='[Name],\n\nkein Meeting-Wunsch.'+(roi1?'\n\nEin Datenpunkt f\u00fcr einen '+personaRole+': '+roi1+'.':'')+(diff1?'\n\nDahinter: '+diff1.charAt(0).toLowerCase()+diff1.slice(1):'')+(ref1?'\n\nHat funktioniert: '+ref1.industry+', '+ref1.country+' \u2014 '+ref1.outcome:'')+'\n\nFalls '+company+' das Thema irgendwann angeht, kann ich die Spezifika f\u00fcr Sie durchspielen. Kein Aufwand Ihrerseits.\n\n[Ihr Name]';
+      t1='1. Erstkontakt';c1='Erste Mail an '+personaRole+'. Relevant f\u00fcr deren Welt.';
+      t2='2. Follow-up';c2='Nach Stille. Eine Zeile Mehrwert.';
+      t3='3. Terminanfrage';c3='Direkter Ask, gerahmt f\u00fcr '+personaRole+'.';
+      t4='4. Value Drop (Ohne Ask)';c4='Etwas N\u00fctzliches geben, zur\u00fccktreten.';
+    } else {
+      s1=angle+' \u2014 '+company;
+      b1='[Name],\n\nI work with '+personaRole+'-level leaders in '+industry+' who are dealing with '+angle.toLowerCase()+'.'+(focus?'\n\nSaw that '+company+' is focused on '+focus.split('.')[0].toLowerCase()+'. That usually means this lands:':'')+'\n\n'+diff1+'\n\n'+(ref1?ref1.industry+' ('+ref1.country+'): '+ref1.outcome+'\n\n':'')+'Worth 15 minutes to see if it maps to '+company+'?\n\n[Your Name]';
+      s2='Re: '+angle+' \u2014 '+company;
+      b2='[Name],\n\nFollowing up on my last note. As '+personaRole+' you probably get 50 of these a week, so I will keep it to one line:\n\n'+(roi1?roi1+'.':'This is saving '+industry+' companies real money and time.')+'\n\nIf the timing is off, no worries. Just let me know either way and I will stop.\n\n[Your Name]';
+      s3='Quick call \u2014 '+k.name+' for '+company;
+      b3='[Name],\n\nI have a specific view on how '+k.name.toLowerCase()+' applies to '+company+' given '+(focus?'your direction on '+focus.split('.')[0].toLowerCase():'what I see in '+industry)+'.'+(pain2?'\n\nThe trigger I keep hearing from '+personaRole+' peers: '+pain2.split(' - ')[0].toLowerCase()+'.':'')+(diff1?'\n\nWhat we bring: '+diff1:'')+'\n\n15 minutes. If it is not relevant to your world, I will say so and we move on.\n\nWhat works this week or next?\n\n[Your Name]';
+      s4='For your files \u2014 '+angle;
+      b4='[Name],\n\nNo meeting ask.'+(roi1?'\n\nOne data point for a '+personaRole+': '+roi1+'.':'')+(diff1?'\n\nBehind it: '+diff1.charAt(0).toLowerCase()+diff1.slice(1):'')+(ref1?'\n\nWorked in practice: '+ref1.industry+', '+ref1.country+' \u2014 '+ref1.outcome:'')+'\n\nIf '+company+' looks at this down the line, I can run the specifics for you. No prep needed on your end.\n\n[Your Name]';
+      t1='1. Cold Introduction';c1='First email to '+personaRole+'. Relevant to their world.';
+      t2='2. Follow-up';c2='After silence. One line of value.';
+      t3='3. Meeting Request';c3='Direct ask, framed for '+personaRole+'.';
+      t4='4. Value Drop (No Ask)';c4='Give something useful, walk away.';
+    }
+    return buildEmMsgCard(t1,c1,s1,b1,base)+buildEmMsgCard(t2,c2,s2,b2,base+1)+buildEmMsgCard(t3,c3,s3,b3,base+2)+buildEmMsgCard(t4,c4,s4,b4,base+3);
   }
 
   if(personas.length>1){
@@ -2026,20 +2065,40 @@ function startEmailWithIntel(){
       h+='</div>';
     });
   } else {
-    var personaRole=personas.length===1?personas[0].role:'decision-maker';
+    var personaRole=personas.length===1?personas[0].role:(L==='de'?'Entscheider':'decision-maker');
     var angle=painShort;
-    var s1=angle+' — '+company;
-    var b1='[Name],\n\nI work with '+industry+' companies dealing with '+angle.toLowerCase()+'.'+(focus?'\n\n'+company+' and '+focus.split('.')[0].toLowerCase()+' — that usually means this is relevant:':'')+'\n\n'+diff1+'\n\n'+(ref1?ref1.industry+' ('+ref1.country+'): '+ref1.outcome+'\n\n':'')+'Worth a 15-minute conversation?\n\n[Your Name]';
-    var s2='Re: '+angle+' — '+company;
-    var b2='[Name],\n\nSent a note last week. Keeping this to one line:\n\n'+(roi1?roi1+'.':'Companies in '+industry+' are getting measurable results here.')+'\n\nBad timing? Just say so and I will stop. No hard feelings.\n\n[Your Name]';
-    var s3='15 min — '+k.name+' for '+company;
-    var b3='[Name],\n\nI have something concrete for '+company+' on '+k.name.toLowerCase()+'.'+(pain2?'\n\nThe issue I keep hearing: '+pain2.split(' - ')[0].toLowerCase()+'.':'')+(diff1?'\n\nWhat works: '+diff1:'')+'\n\n15 minutes. If it does not fit, I will tell you straight.\n\nWhat does your calendar look like this week?\n\n[Your Name]';
-    var s4=k.name+' — one data point for '+company;
-    var b4='[Name],\n\nNo ask here.'+(roi1?'\n\nJust this number: '+roi1+'.':'')+(diff1?'\n\nHow: '+diff1.charAt(0).toLowerCase()+diff1.slice(1):'')+(ref1?'\n\nReal example: '+ref1.industry+', '+ref1.country+' — '+ref1.outcome:'')+'\n\nIf '+company+' looks at this later, I can run the specifics. Zero prep on your side.\n\n[Your Name]';
-    h+=buildEmMsgCard('1. Cold Introduction','First touch to '+personaRole+' at '+company+'.',s1,b1,0);
-    h+=buildEmMsgCard('2. Follow-up','After silence. Short, one exit ramp.',s2,b2,1);
-    h+=buildEmMsgCard('3. Meeting Request','Direct ask. Specific to '+company+'.',s3,b3,2);
-    h+=buildEmMsgCard('4. Value Drop (No Ask)','Give value, no strings.',s4,b4,3);
+    var s1,b1,s2,b2,s3,b3,s4,b4,t1,c1,t2,c2,t3,c3,t4,c4;
+    if(L==='de'){
+      s1=angle+' \u2014 '+company;
+      b1='[Name],\n\nich arbeite mit '+industry+'-Unternehmen die sich mit '+angle+' befassen.'+(focus?'\n\n'+company+' und '+focus.split('.')[0]+' \u2014 das bedeutet meist dass folgendes relevant ist:':'')+'\n\n'+diff1+'\n\n'+(ref1?ref1.industry+' ('+ref1.country+'): '+ref1.outcome+'\n\n':'')+'Lohnt sich ein 15-min\u00fctiges Gespr\u00e4ch?\n\n[Ihr Name]';
+      s2='Re: '+angle+' \u2014 '+company;
+      b2='[Name],\n\nhabe letzte Woche geschrieben. Halte mich kurz:\n\n'+(roi1?roi1+'.':'Unternehmen in '+industry+' erzielen hier messbare Ergebnisse.')+'\n\nSchlechtes Timing? Kurze R\u00fcckmeldung reicht, dann h\u00f6re ich auf.\n\n[Ihr Name]';
+      s3='15 Min \u2014 '+k.name+' f\u00fcr '+company;
+      b3='[Name],\n\nich habe etwas Konkretes f\u00fcr '+company+' zum Thema '+k.name.toLowerCase()+'.'+(pain2?'\n\nDas Thema das immer wieder kommt: '+pain2.split(' - ')[0]+'.':'')+(diff1?'\n\nWas funktioniert: '+diff1:'')+'\n\n15 Minuten. Falls es nicht passt, sage ich Ihnen das direkt.\n\nWie sieht Ihre Woche aus?\n\n[Ihr Name]';
+      s4=k.name+' \u2014 ein Datenpunkt f\u00fcr '+company;
+      b4='[Name],\n\nkein Ask hier.'+(roi1?'\n\nNur diese Zahl: '+roi1+'.':'')+(diff1?'\n\nWie: '+diff1.charAt(0).toLowerCase()+diff1.slice(1):'')+(ref1?'\n\nReales Beispiel: '+ref1.industry+', '+ref1.country+' \u2014 '+ref1.outcome:'')+'\n\nFalls '+company+' das sp\u00e4ter angeht, kann ich die Spezifika durchspielen. Null Aufwand Ihrerseits.\n\n[Ihr Name]';
+      t1='1. Erstkontakt';c1='Erster Touchpoint zu '+personaRole+' bei '+company+'.';
+      t2='2. Follow-up';c2='Nach Stille. Kurz, ein Ausgang.';
+      t3='3. Terminanfrage';c3='Direkter Ask. Spezifisch f\u00fcr '+company+'.';
+      t4='4. Value Drop (Ohne Ask)';c4='Mehrwert geben, keine Bedingungen.';
+    } else {
+      s1=angle+' \u2014 '+company;
+      b1='[Name],\n\nI work with '+industry+' companies dealing with '+angle.toLowerCase()+'.'+(focus?'\n\n'+company+' and '+focus.split('.')[0].toLowerCase()+' \u2014 that usually means this is relevant:':'')+'\n\n'+diff1+'\n\n'+(ref1?ref1.industry+' ('+ref1.country+'): '+ref1.outcome+'\n\n':'')+'Worth a 15-minute conversation?\n\n[Your Name]';
+      s2='Re: '+angle+' \u2014 '+company;
+      b2='[Name],\n\nSent a note last week. Keeping this to one line:\n\n'+(roi1?roi1+'.':'Companies in '+industry+' are getting measurable results here.')+'\n\nBad timing? Just say so and I will stop. No hard feelings.\n\n[Your Name]';
+      s3='15 min \u2014 '+k.name+' for '+company;
+      b3='[Name],\n\nI have something concrete for '+company+' on '+k.name.toLowerCase()+'.'+(pain2?'\n\nThe issue I keep hearing: '+pain2.split(' - ')[0].toLowerCase()+'.':'')+(diff1?'\n\nWhat works: '+diff1:'')+'\n\n15 minutes. If it does not fit, I will tell you straight.\n\nWhat does your calendar look like this week?\n\n[Your Name]';
+      s4=k.name+' \u2014 one data point for '+company;
+      b4='[Name],\n\nNo ask here.'+(roi1?'\n\nJust this number: '+roi1+'.':'')+(diff1?'\n\nHow: '+diff1.charAt(0).toLowerCase()+diff1.slice(1):'')+(ref1?'\n\nReal example: '+ref1.industry+', '+ref1.country+' \u2014 '+ref1.outcome:'')+'\n\nIf '+company+' looks at this later, I can run the specifics. Zero prep on your side.\n\n[Your Name]';
+      t1='1. Cold Introduction';c1='First touch to '+personaRole+' at '+company+'.';
+      t2='2. Follow-up';c2='After silence. Short, one exit ramp.';
+      t3='3. Meeting Request';c3='Direct ask. Specific to '+company+'.';
+      t4='4. Value Drop (No Ask)';c4='Give value, no strings.';
+    }
+    h+=buildEmMsgCard(t1,c1,s1,b1,0);
+    h+=buildEmMsgCard(t2,c2,s2,b2,1);
+    h+=buildEmMsgCard(t3,c3,s3,b3,2);
+    h+=buildEmMsgCard(t4,c4,s4,b4,3);
   }
 
   document.getElementById('emBody').innerHTML=h;
