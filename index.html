@@ -937,7 +937,12 @@ function renderAiResults(company,k,L){
   if(cs.techLandscape&&cs.techLandscape!=='N/A')h+='<div style="grid-column:1/-1"><strong>Tech Landscape:</strong> '+cs.techLandscape+'</div>';
   h+='</div></div>';}
   // Profile
-  h+='<div class="ai-result-profile"><strong>'+company+'</strong> — '+r.profile+'</div>';
+  var companyLiUrl='https://www.linkedin.com/search/results/companies/?keywords='+encodeURIComponent(company);
+  if(!isEasterEgg){
+    h+='<div class="ai-result-profile"><a href="'+companyLiUrl+'" target="_blank" rel="noopener" style="color:#0A66C2;text-decoration:none;font-weight:700;border-bottom:1px dashed #0A66C2">'+company+'</a> — '+r.profile+'</div>';
+  } else {
+    h+='<div class="ai-result-profile"><strong>'+company+'</strong> — '+r.profile+'</div>';
+  }
   // Opener
   if(r.opener){h+='<div class="ai-result-section"><h4>Suggested Opening</h4><div class="ai-result-opener">'+r.opener+'</div></div>';}
   // Watch out
@@ -1711,6 +1716,7 @@ function openLinkedIn(){
   h+=buildLiMsgCard('3. Follow-up / Breakup','If silence. Leave a breadcrumb and go.',msg3,2);
 
   document.getElementById('liBody').innerHTML=h;
+  document.getElementById('liBody').scrollTop=0;
   document.getElementById('liOverlay').classList.add('show');
   document.querySelector('.contact-chip').style.display='none';
   document.getElementById('aiFab').style.display='none';
@@ -1724,7 +1730,7 @@ function startLinkedInWithIntel(){
   var cp=r.callPrep||{};
   // Close AI modal
   document.getElementById('aiOverlay').classList.remove('show');
-  document.getElementById('liTitle').textContent='LinkedIn Outreach \u2014 '+k.name+' \u00d7 '+company;
+  document.getElementById('liTitle').innerHTML='LinkedIn Outreach \u2014 '+k.name+' \u00d7 <a href="https://www.linkedin.com/search/results/companies/?keywords='+encodeURIComponent(company)+'" target="_blank" rel="noopener" style="color:#0A66C2;text-decoration:none;border-bottom:1px dashed #0A66C2">'+company+'</a>';
   var h='';
 
   // Persona LinkedIn search links
@@ -1741,11 +1747,10 @@ function startLinkedInWithIntel(){
     h+='</div></div>';
   }
 
-  // Build personalized messages
+  // Build personalized messages - per persona if multiple selected
   var snapshot=r.companySnapshot||{};
   var industry=snapshot.industry||'your industry';
   var focus=snapshot.strategicFocus||'';
-  var opener=r.opener||'';
   var diff1=(cp.differentiators&&cp.differentiators[0])?cp.differentiators[0]:(k.diff[L][0]||'');
   var ref1=(k.refs&&k.refs[L]&&k.refs[L][0])?k.refs[L][0]:null;
   var roi1='';
@@ -1754,21 +1759,38 @@ function startLinkedInWithIntel(){
   if(r.topPains&&r.topPains.length&&k.pain&&k.pain[L]){painContext=k.pain[L][r.topPains[0]]||'';}
   var painShort=painContext?painContext.split(' - ')[0]:'';
 
-  // Message 1: Connection Request (specific to company, under 300 chars)
-  var msg1='[Name], '+(focus?company+' and '+focus.split('.')[0]+' — ':'')+(painShort?painShort+', how is '+company+' approaching that?':'quick one for you about '+company+'.')+'\n\nGenuinely curious, not selling anything here.';
-  if(msg1.length>300){msg1=msg1.substring(0,297)+'...';}
+  // Helper: build 3 messages for a specific persona context
+  function buildPersonaMsgs(personaRole,personaPrio,msgIdx){
+    var prio1=personaPrio?personaPrio.split(',')[0].trim():'';
+    var angle=prio1||painShort;
+    var m1='[Name], '+(focus?company+' and '+focus.split('.')[0]+' — ':'')+(angle?angle+', how is '+company+' approaching that from a '+personaRole+' perspective?':'quick one for you.')+'\n\nGenuinely curious, not selling anything here.';
+    if(m1.length>300){m1=m1.substring(0,297)+'...';}
+    var m2='[Name], as '+personaRole+' this probably lands: '+(angle?angle+' is costing '+industry+' teams more than most realize. ':'')+'What\'s working: '+diff1+'\n\n'+(ref1?ref1.industry+' company in '+ref1.country+' — '+ref1.outcome+'\n\n':'')+'I can map this to '+company+' in 5 min if useful.';
+    var m3='[Name], I\'ll stop here.'+(roi1?'\n\nOne number for your world: '+roi1+'.':'')+(focus?'\n\nGiven where '+company+' is headed, this might matter eventually.':'')+'\n\nPing me if it does. If not, all good.';
+    var base=msgIdx*3;
+    return buildLiMsgCard('1. Connection Request','Under 300 chars. Specific to '+personaRole+'.',m1,base)+buildLiMsgCard('2. Value Message','Framed for what a '+personaRole+' cares about.',m2,base+1)+buildLiMsgCard('3. Follow-up / Breakup','Short. Leave something relevant to their role.',m3,base+2);
+  }
 
-  // Message 2: Value Message (concrete, no filler)
-  var msg2='[Name], '+(painShort?painShort+' keeps killing '+industry+' teams. ':'')+'Here\'s what\'s actually working: '+diff1+'\n\n'+(ref1?ref1.industry+' company in '+ref1.country+' did it. Result: '+ref1.outcome+'\n\n':'')+'I can map this to '+company+' specifically if you want. Takes 5 min.';
-
-  // Message 3: Follow-up / Breakup (short, leave a number, go)
-  var msg3='[Name], I\'ll stop here.'+(roi1?'\n\nOne thing worth keeping: '+roi1+'.':'')+(focus?'\n\nGiven '+company+'\'s direction on '+focus.split('.')[0]+', this might matter later.':'')+'\n\nIf it does, ping me. If not, all good.';
-
-  h+=buildLiMsgCard('1. Connection Request','For '+company+'. Under 300 chars, one real question.',msg1,0);
-  h+=buildLiMsgCard('2. Value Message','Concrete stuff for '+company+'. Give value, then shut up.',msg2,1);
-  h+=buildLiMsgCard('3. Follow-up / Breakup','Leave one useful number behind and walk away.',msg3,2);
+  if(personas.length>1){
+    // Multiple personas: generate separate message sets per persona
+    personas.forEach(function(p,idx){
+      h+='<div style="margin-top:'+(idx?'24':'0')+'px;padding-top:'+(idx?'20':'0')+'px;border-top:'+(idx?'1px solid #e1e2e6':'none')+'"><div style="font-size:12px;font-weight:700;color:#0A66C2;margin-bottom:12px;display:flex;align-items:center;gap:6px"><svg width="13" height="13" viewBox="0 0 24 24" fill="#0A66C2"><path d="M12 12c2.761 0 5-2.239 5-5s-2.239-5-5-5-5 2.239-5 5 2.239 5 5 5zm0 2c-3.315 0-10 1.658-10 5v2h20v-2c0-3.342-6.685-5-10-5z"/></svg>Messages for '+p.role+'</div>';
+      h+=buildPersonaMsgs(p.role,p.msg,idx);
+      h+='</div>';
+    });
+  } else {
+    // Single or no persona: generic messages for the company
+    var msg1='[Name], '+(focus?company+' and '+focus.split('.')[0]+' — ':'')+(painShort?painShort+', how is '+company+' approaching that?':'quick one for you about '+company+'.')+'\n\nGenuinely curious, not selling anything here.';
+    if(msg1.length>300){msg1=msg1.substring(0,297)+'...';}
+    var msg2='[Name], '+(painShort?painShort+' keeps killing '+industry+' teams. ':'')+'Here\'s what\'s actually working: '+diff1+'\n\n'+(ref1?ref1.industry+' company in '+ref1.country+' did it. Result: '+ref1.outcome+'\n\n':'')+'I can map this to '+company+' specifically if you want. Takes 5 min.';
+    var msg3='[Name], I\'ll stop here.'+(roi1?'\n\nOne thing worth keeping: '+roi1+'.':'')+(focus?'\n\nGiven '+company+'\'s direction on '+focus.split('.')[0]+', this might matter later.':'')+'\n\nIf it does, ping me. If not, all good.';
+    h+=buildLiMsgCard('1. Connection Request','For '+company+'. Under 300 chars, one real question.',msg1,0);
+    h+=buildLiMsgCard('2. Value Message','Concrete stuff for '+company+'. Give value, then shut up.',msg2,1);
+    h+=buildLiMsgCard('3. Follow-up / Breakup','Leave one useful number behind and walk away.',msg3,2);
+  }
 
   document.getElementById('liBody').innerHTML=h;
+  document.getElementById('liBody').scrollTop=0;
   document.getElementById('liOverlay').classList.add('show');
   document.querySelector('.contact-chip').style.display='none';
   document.getElementById('aiFab').style.display='none';
